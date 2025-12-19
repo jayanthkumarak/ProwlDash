@@ -32,6 +32,11 @@ from collections import defaultdict, Counter
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here
 # =============================================================================
+# Colorblind-friendly palette based on Okabe-Ito
+# Reference: https://siegal.bio.nyu.edu/color-palette/
+# Core colors: Orange #E69F00, Sky Blue #56B4E9, Bluish Green #009E73,
+#              Yellow #F0E442, Blue #0072B2, Vermillion #D55E00, Purple #CC79A7
+
 FRAMEWORK_REGISTRY = {
     # AWS Frameworks
     "cis": {
@@ -39,8 +44,8 @@ FRAMEWORK_REGISTRY = {
         "name": "CIS AWS Benchmark",
         "full_name": "CIS Amazon Web Services Foundations Benchmark",
         "icon": "🔒",
-        "color": "#4a9eff",
-        "gradient": "linear-gradient(90deg, #4a9eff, #3dd68c)",
+        "color": "#0072B2",  # Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #0072B2, #56B4E9)",
         "description": "Center for Internet Security AWS Foundations Benchmark compliance checks.",
         "patterns": ["CIS-", "CIS_"],
     },
@@ -49,8 +54,8 @@ FRAMEWORK_REGISTRY = {
         "name": "AWS FSBP",
         "full_name": "AWS Foundational Security Best Practices",
         "icon": "🛡️",
-        "color": "#fb923c",
-        "gradient": "linear-gradient(90deg, #fb923c, #fbbf24)",
+        "color": "#E69F00",  # Orange (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #E69F00, #F0E442)",
         "description": "AWS Foundational Security Best Practices standard compliance checks.",
         "patterns": ["AWS-Foundational-Security", "FSBP"],
     },
@@ -59,8 +64,8 @@ FRAMEWORK_REGISTRY = {
         "name": "Well-Architected",
         "full_name": "AWS Well-Architected Framework",
         "icon": "🏗️",
-        "color": "#8b5cf6",
-        "gradient": "linear-gradient(90deg, #8b5cf6, #a78bfa)",
+        "color": "#CC79A7",  # Reddish Purple (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #CC79A7, #D4A5C9)",
         "description": "AWS Well-Architected Framework security pillar checks.",
         "patterns": ["AWS-Well-Architected"],
     },
@@ -70,8 +75,8 @@ FRAMEWORK_REGISTRY = {
         "name": "PCI DSS",
         "full_name": "Payment Card Industry Data Security Standard",
         "icon": "💳",
-        "color": "#10b981",
-        "gradient": "linear-gradient(90deg, #10b981, #34d399)",
+        "color": "#009E73",  # Bluish Green (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #009E73, #56B4E9)",
         "description": "PCI DSS compliance checks for payment card security.",
         "patterns": ["PCI-", "PCI_"],
     },
@@ -80,8 +85,8 @@ FRAMEWORK_REGISTRY = {
         "name": "HIPAA",
         "full_name": "Health Insurance Portability and Accountability Act",
         "icon": "🏥",
-        "color": "#ec4899",
-        "gradient": "linear-gradient(90deg, #ec4899, #f472b6)",
+        "color": "#CC79A7",  # Reddish Purple (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #CC79A7, #E69F00)",
         "description": "HIPAA compliance checks for healthcare data protection.",
         "patterns": ["HIPAA"],
     },
@@ -90,8 +95,8 @@ FRAMEWORK_REGISTRY = {
         "name": "GDPR",
         "full_name": "General Data Protection Regulation",
         "icon": "🇪🇺",
-        "color": "#3b82f6",
-        "gradient": "linear-gradient(90deg, #3b82f6, #60a5fa)",
+        "color": "#0072B2",  # Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #0072B2, #009E73)",
         "description": "GDPR compliance checks for EU data protection.",
         "patterns": ["GDPR"],
     },
@@ -100,8 +105,8 @@ FRAMEWORK_REGISTRY = {
         "name": "SOC 2",
         "full_name": "Service Organization Control 2",
         "icon": "📋",
-        "color": "#6366f1",
-        "gradient": "linear-gradient(90deg, #6366f1, #818cf8)",
+        "color": "#56B4E9",  # Sky Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #56B4E9, #0072B2)",
         "description": "SOC 2 Trust Services Criteria compliance checks.",
         "patterns": ["SOC2", "SOC_2"],
     },
@@ -111,8 +116,8 @@ FRAMEWORK_REGISTRY = {
         "name": "NIST 800-53",
         "full_name": "NIST Special Publication 800-53",
         "icon": "🏛️",
-        "color": "#14b8a6",
-        "gradient": "linear-gradient(90deg, #14b8a6, #2dd4bf)",
+        "color": "#009E73",  # Bluish Green (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #009E73, #0072B2)",
         "description": "NIST 800-53 security and privacy controls.",
         "patterns": ["NIST-800-53"],
     },
@@ -121,8 +126,8 @@ FRAMEWORK_REGISTRY = {
         "name": "NIST CSF",
         "full_name": "NIST Cybersecurity Framework",
         "icon": "🔐",
-        "color": "#0891b2",
-        "gradient": "linear-gradient(90deg, #0891b2, #22d3ee)",
+        "color": "#56B4E9",  # Sky Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #56B4E9, #009E73)",
         "description": "NIST Cybersecurity Framework compliance checks.",
         "patterns": ["NIST-CSF"],
     },
@@ -131,8 +136,8 @@ FRAMEWORK_REGISTRY = {
         "name": "NIST 800-171",
         "full_name": "NIST Special Publication 800-171",
         "icon": "🔏",
-        "color": "#0d9488",
-        "gradient": "linear-gradient(90deg, #0d9488, #14b8a6)",
+        "color": "#0072B2",  # Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #0072B2, #56B4E9)",
         "description": "NIST 800-171 CUI protection controls.",
         "patterns": ["NIST-800-171"],
     },
@@ -142,8 +147,8 @@ FRAMEWORK_REGISTRY = {
         "name": "ISO 27001",
         "full_name": "ISO/IEC 27001 Information Security",
         "icon": "🌐",
-        "color": "#7c3aed",
-        "gradient": "linear-gradient(90deg, #7c3aed, #a78bfa)",
+        "color": "#CC79A7",  # Reddish Purple (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #CC79A7, #56B4E9)",
         "description": "ISO 27001 information security management checks.",
         "patterns": ["ISO27001", "ISO-27001"],
     },
@@ -153,8 +158,8 @@ FRAMEWORK_REGISTRY = {
         "name": "FedRAMP",
         "full_name": "Federal Risk and Authorization Management Program",
         "icon": "🦅",
-        "color": "#dc2626",
-        "gradient": "linear-gradient(90deg, #dc2626, #ef4444)",
+        "color": "#D55E00",  # Vermillion (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #D55E00, #E69F00)",
         "description": "FedRAMP compliance for US federal cloud services.",
         "patterns": ["FedRAMP", "FedRamp"],
     },
@@ -163,8 +168,8 @@ FRAMEWORK_REGISTRY = {
         "name": "CISA",
         "full_name": "Cybersecurity and Infrastructure Security Agency",
         "icon": "🛡️",
-        "color": "#1d4ed8",
-        "gradient": "linear-gradient(90deg, #1d4ed8, #3b82f6)",
+        "color": "#0072B2",  # Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #0072B2, #56B4E9)",
         "description": "CISA cybersecurity best practices.",
         "patterns": ["CISA"],
     },
@@ -174,8 +179,8 @@ FRAMEWORK_REGISTRY = {
         "name": "MITRE ATT&CK",
         "full_name": "MITRE ATT&CK Framework",
         "icon": "⚔️",
-        "color": "#b91c1c",
-        "gradient": "linear-gradient(90deg, #b91c1c, #dc2626)",
+        "color": "#D55E00",  # Vermillion (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #D55E00, #CC79A7)",
         "description": "MITRE ATT&CK adversarial tactics and techniques.",
         "patterns": ["MITRE-ATTACK", "MITRE_ATTACK"],
     },
@@ -184,8 +189,8 @@ FRAMEWORK_REGISTRY = {
         "name": "ENS",
         "full_name": "Esquema Nacional de Seguridad (Spain)",
         "icon": "🇪🇸",
-        "color": "#ca8a04",
-        "gradient": "linear-gradient(90deg, #ca8a04, #eab308)",
+        "color": "#E69F00",  # Orange (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #E69F00, #F0E442)",
         "description": "Spanish National Security Scheme compliance.",
         "patterns": ["ENS-"],
     },
@@ -194,8 +199,8 @@ FRAMEWORK_REGISTRY = {
         "name": "KISA ISMS-P",
         "full_name": "Korea Internet & Security Agency ISMS-P",
         "icon": "🇰🇷",
-        "color": "#0ea5e9",
-        "gradient": "linear-gradient(90deg, #0ea5e9, #38bdf8)",
+        "color": "#56B4E9",  # Sky Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #56B4E9, #0072B2)",
         "description": "Korean ISMS-P information security certification.",
         "patterns": ["KISA-ISMS"],
     },
@@ -204,8 +209,8 @@ FRAMEWORK_REGISTRY = {
         "name": "FFIEC",
         "full_name": "Federal Financial Institutions Examination Council",
         "icon": "🏦",
-        "color": "#059669",
-        "gradient": "linear-gradient(90deg, #059669, #10b981)",
+        "color": "#009E73",  # Bluish Green (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #009E73, #56B4E9)",
         "description": "FFIEC cybersecurity assessment for financial institutions.",
         "patterns": ["FFIEC"],
     },
@@ -214,8 +219,8 @@ FRAMEWORK_REGISTRY = {
         "name": "RBI CSF",
         "full_name": "Reserve Bank of India Cyber Security Framework",
         "icon": "🇮🇳",
-        "color": "#ea580c",
-        "gradient": "linear-gradient(90deg, #ea580c, #f97316)",
+        "color": "#E69F00",  # Orange (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #E69F00, #D55E00)",
         "description": "RBI Cyber Security Framework for Indian banks.",
         "patterns": ["RBI-"],
     },
@@ -224,8 +229,8 @@ FRAMEWORK_REGISTRY = {
         "name": "NIS2",
         "full_name": "Network and Information Security Directive 2",
         "icon": "🇪🇺",
-        "color": "#2563eb",
-        "gradient": "linear-gradient(90deg, #2563eb, #3b82f6)",
+        "color": "#0072B2",  # Blue (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #0072B2, #009E73)",
         "description": "EU NIS2 Directive cybersecurity requirements.",
         "patterns": ["NIS2"],
     },
@@ -234,8 +239,8 @@ FRAMEWORK_REGISTRY = {
         "name": "BSI C5",
         "full_name": "Cloud Computing Compliance Criteria Catalogue",
         "icon": "🇩🇪",
-        "color": "#475569",
-        "gradient": "linear-gradient(90deg, #475569, #64748b)",
+        "color": "#999999",  # Grey (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #999999, #56B4E9)",
         "description": "German BSI C5 cloud security attestation.",
         "patterns": ["C5-"],
     },
@@ -244,8 +249,8 @@ FRAMEWORK_REGISTRY = {
         "name": "GxP",
         "full_name": "Good Practice Guidelines",
         "icon": "💊",
-        "color": "#16a34a",
-        "gradient": "linear-gradient(90deg, #16a34a, #22c55e)",
+        "color": "#009E73",  # Bluish Green (Okabe-Ito)
+        "gradient": "linear-gradient(90deg, #009E73, #E69F00)",
         "description": "GxP compliance for life sciences.",
         "patterns": ["GxP-", "GXP"],
     },
@@ -257,8 +262,8 @@ DEFAULT_FRAMEWORK = {
     "name": "Security Scan",
     "full_name": "Prowler Security Scan Results",
     "icon": "🔍",
-    "color": "#6b7280",
-    "gradient": "linear-gradient(90deg, #6b7280, #9ca3af)",
+    "color": "#999999",  # Grey (Okabe-Ito)
+    "gradient": "linear-gradient(90deg, #999999, #56B4E9)",
     "description": "Prowler security scan compliance checks.",
     "patterns": [],
 }
@@ -928,8 +933,8 @@ def generate_landing_page(generated_files: list, scan_info: str, stats_by_fw: di
 {card_styles}
         .card p {{ color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }}
         .card-meta {{ display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); }}
-        .card-meta .fail {{ color: #ff6b6b; }}
-        .card-meta .pass {{ color: #3dd68c; }}
+        .card-meta .fail {{ color: #D55E00; }}  /* Vermillion (Okabe-Ito) */
+        .card-meta .pass {{ color: #009E73; }}  /* Bluish Green (Okabe-Ito) */
         .footer {{ margin-top: 60px; text-align: center; color: var(--text-muted); font-size: 12px; }}
     </style>
 </head>

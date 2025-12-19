@@ -5,26 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AWS FSBP Compliance Dashboard - Indupro</title>
     <style>
+        /* Colorblind-friendly palette based on Okabe-Ito
+           Reference: https://siegal.bio.nyu.edu/color-palette/
+           Avoids red/green confusion, uses blue/orange as primary contrast */
         :root, [data-theme="dark"] {
             --bg-primary: #0a0a0f;
             --bg-secondary: #12121a;
             --bg-tertiary: #1a1a24;
             --bg-hover: #22222e;
             --border: #2a2a38;
-            --border-active: #fb923c;
+            --border-active: #E69F00;
             --text-primary: #f0f0f5;
             --text-secondary: #9090a0;
             --text-muted: #606070;
-            --accent-main: #fb923c;
-            --accent-green: #3dd68c;
-            --accent-red: #ff6b6b;
-            --accent-yellow: #ffd93d;
-            --accent-purple: #a78bfa;
-            --accent-blue: #4a9eff;
-            --severity-critical: #ef4444;
-            --severity-high: #f97316;
-            --severity-medium: #eab308;
-            --severity-low: #3b82f6;
+            /* Okabe-Ito colors */
+            --accent-main: #E69F00;       /* Orange (FSBP brand) */
+            --accent-green: #009E73;      /* Bluish Green (success) */
+            --accent-red: #D55E00;        /* Vermillion (error - NOT pure red) */
+            --accent-yellow: #F0E442;     /* Yellow */
+            --accent-purple: #CC79A7;     /* Reddish Purple */
+            --accent-blue: #56B4E9;       /* Sky Blue */
+            /* Severity uses distinct hues, not red/green */
+            --severity-critical: #D55E00; /* Vermillion */
+            --severity-high: #E69F00;     /* Orange */
+            --severity-medium: #F0E442;   /* Yellow */
+            --severity-low: #0072B2;      /* Blue */
         }
         [data-theme="light"] {
             --bg-primary: #f5f7fa;
@@ -32,20 +37,21 @@
             --bg-tertiary: #e8ecf1;
             --bg-hover: #dfe4eb;
             --border: #d1d9e6;
-            --border-active: #ea580c;
+            --border-active: #E69F00;
             --text-primary: #1a1f36;
             --text-secondary: #4a5568;
             --text-muted: #718096;
-            --accent-main: #ea580c;
-            --accent-green: #16a34a;
-            --accent-red: #dc2626;
-            --accent-yellow: #ca8a04;
-            --accent-purple: #7c3aed;
-            --accent-blue: #2563eb;
-            --severity-critical: #dc2626;
-            --severity-high: #ea580c;
-            --severity-medium: #ca8a04;
-            --severity-low: #2563eb;
+            /* Okabe-Ito colors (same hues, work on light bg) */
+            --accent-main: #E69F00;       /* Orange */
+            --accent-green: #009E73;      /* Bluish Green */
+            --accent-red: #D55E00;        /* Vermillion */
+            --accent-yellow: #B8860B;     /* Darker yellow for contrast */
+            --accent-purple: #CC79A7;     /* Reddish Purple */
+            --accent-blue: #0072B2;       /* Blue */
+            --severity-critical: #D55E00;
+            --severity-high: #E69F00;
+            --severity-medium: #B8860B;   /* Darker for light bg */
+            --severity-low: #0072B2;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -186,7 +192,7 @@
         .summary-card.pass::before { background: var(--accent-green); }
         .summary-card.manual::before { background: var(--accent-yellow); }
         .summary-card.fixed::before { background: var(--accent-main); }
-        .summary-card.new-fail::before { background: #dc2626; }
+        .summary-card.new-fail::before { background: var(--accent-purple); }
         .summary-card.critical::before { background: var(--severity-critical); }
         .summary-card.high::before { background: var(--severity-high); }
         .summary-card.medium::before { background: var(--severity-medium); }
@@ -196,7 +202,7 @@
         .summary-card.pass .summary-value { color: var(--accent-green); }
         .summary-card.manual .summary-value { color: var(--accent-yellow); }
         .summary-card.fixed .summary-value { color: var(--accent-main); }
-        .summary-card.new-fail .summary-value { color: #dc2626; }
+        .summary-card.new-fail .summary-value { color: var(--accent-purple); }
         .summary-card.critical .summary-value { color: var(--severity-critical); }
         .summary-card.high .summary-value { color: var(--severity-high); }
         .summary-card.medium .summary-value { color: var(--severity-medium); }
