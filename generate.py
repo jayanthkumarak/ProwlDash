@@ -46,7 +46,7 @@ FRAMEWORK_REGISTRY = {
         "icon": "🔒",
         "color": "#0072B2",  # Blue (Okabe-Ito)
         "gradient": "linear-gradient(90deg, #0072B2, #56B4E9)",
-        "description": "Center for Internet Security AWS Foundations Benchmark compliance checks.",
+        "description": "CIS Amazon Web Services Foundations Benchmark compliance checks.",
         "patterns": ["CIS-", "CIS_"],
     },
     "fsbp": {
@@ -554,7 +554,7 @@ def compute_stats(data: list[dict], old_data: list[dict]) -> dict:
 
 
 def get_accounts(data: list[dict]) -> dict:
-    """Extract unique accounts with friendly names."""
+    """Extract unique accounts - uses account ID as primary identifier."""
     accounts = {}
     acct_counter = 0
     for r in data:
@@ -563,31 +563,17 @@ def get_accounts(data: list[dict]) -> dict:
             acct_counter += 1
             raw_name = r.get("acctName") or ""
 
-            # Create display name for tabs (friendly name or full account ID)
-            if raw_name and raw_name != acct_id:
-                display = raw_name
-            else:
-                # No friendly name - show full account ID for clarity
-                display = acct_id
+            # Always use account ID for display (clearer, more consistent)
+            display = acct_id
 
-            # Create short name for badges/tags (compact version)
-            if raw_name and raw_name != acct_id:
-                # Remove common prefixes, keep it readable
-                short = raw_name.replace("indupro-", "").replace("-", " ").replace("_", " ")
-                short = short.replace("aws-", "").replace("aws ", "")
-                short = short.strip()[:12]
-                # If stripping leaves us with just "indupro" or empty, use counter
-                if not short or short.lower() == "indupro":
-                    short = f"acct{acct_counter}"
-            else:
-                # No friendly name - use last 4 digits for badges
-                short = f"...{acct_id[-4:]}" if len(acct_id) >= 4 else acct_id
+            # Short name for badges - last 4 digits
+            short = f"...{acct_id[-4:]}" if len(acct_id) >= 4 else acct_id
 
             accounts[acct_id] = {
                 "id": acct_id,
                 "short": short,        # For badges/tags (compact)
-                "display": display,    # For tabs/headers (full name or ID)
-                "name": raw_name or acct_id
+                "display": display,    # For tabs/headers (account ID)
+                "name": raw_name or acct_id  # Original name for reference
             }
     return accounts
 
@@ -704,29 +690,20 @@ def generate_html(data: dict, framework: str) -> str:
 
 
 def get_template(framework: str) -> str:
-    """Return the appropriate HTML template.
+    """Return the universal HTML dashboard template.
 
-    Falls back to CIS template if specific framework template doesn't exist.
+    Uses a single template that dynamically adapts to any framework
+    via DATA.frameworkInfo passed at generation time.
     """
     script_dir = Path(__file__).parent
-    template_file = script_dir / "templates" / f"{framework}_template.html"
-
+    
+    # Universal template works for all frameworks
+    template_file = script_dir / "templates" / "dashboard_template.html"
     if template_file.exists():
         return template_file.read_text(encoding="utf-8")
 
-    # Fallback to CIS template (most complete/feature-rich template)
-    cis_template = script_dir / "templates" / "cis_template.html"
-    if cis_template.exists():
-        print(f"  Note: Using CIS template for {framework} (no specific template found)")
-        return cis_template.read_text(encoding="utf-8")
+    raise FileNotFoundError(f"Dashboard template not found. Expected: {template_file}")
 
-    # Last resort fallback to FSBP template
-    fsbp_template = script_dir / "templates" / "fsbp_template.html"
-    if fsbp_template.exists():
-        print(f"  Note: Using FSBP template for {framework} (no specific template found)")
-        return fsbp_template.read_text(encoding="utf-8")
-
-    raise FileNotFoundError(f"No template found. Expected: {template_file}")
 
 
 def show_help():
