@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prowler Dashboard Generator - Documentation</title>
+    <title>ProwlDash — Documentation</title>
     <style>
         :root,
         [data-theme="dark"] {
@@ -304,9 +304,9 @@
 
 <body>
     <div class="header">
-        <h1>🔍 Prowler Dashboard Generator</h1>
-        <p class="subtitle">Transform Prowler security scan CSV outputs into beautiful, interactive HTML dashboards</p>
-        <span class="version">v3.0</span>
+        <h1>ProwlDash</h1>
+        <p class="subtitle">Generate interactive compliance dashboards from Prowler security scans</p>
+        <span class="version">v4.0</span>
     </div>
 
     <nav class="nav">
@@ -323,19 +323,19 @@
 
             <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>python3 generate.py your_prowler_report.csv</code>
+                <code>python3 prowldash.py your_prowler_report.csv</code>
             </div>
 
             <p>For multiple accounts or files:</p>
             <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>python3 generate.py account1.csv account2.csv account3.csv</code>
+                <code>python3 prowldash.py account1.csv account2.csv account3.csv</code>
             </div>
 
             <p>Force a specific compliance framework:</p>
             <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>python3 generate.py --framework aws-well-architected report.csv</code>
+                <code>python3 prowldash.py --framework aws-well-architected report.csv</code>
             </div>
         </section>
 
