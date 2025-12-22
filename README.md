@@ -1,6 +1,13 @@
-# Prowler Dashboard Generator V3
+# Prowler Dashboard Generator V4
 
 A framework-agnostic Python CLI tool that transforms Prowler security scan CSV outputs into beautiful, interactive HTML dashboards. Auto-detects and supports **20+ compliance frameworks** including CIS, FSBP, PCI-DSS, HIPAA, NIST, SOC2, ISO27001, GDPR, FedRAMP, and more.
+
+## What's New in V4
+
+- **Universal Template**: Single template dynamically adapts to any framework
+- **Dynamic Titles**: Dashboard titles and headers show correct framework name with icon
+- **HTML Documentation**: Interactive docs page at `docs/index.html`
+- **Prowler-Aligned Naming**: Framework names match Prowler's official GitHub definitions
 
 ## Features
 
@@ -12,6 +19,7 @@ A framework-agnostic Python CLI tool that transforms Prowler security scan CSV o
 - **Self-Contained HTML**: Generated dashboards work offline - no server required
 - **Dark/Light Themes**: Toggle between themes with localStorage persistence
 - **Timestamped Output**: Organized output folders with date/time stamps
+
 
 ---
 
