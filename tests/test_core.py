@@ -3,7 +3,7 @@ import unittest
 import json
 import sys
 import os
-from pathlib import Path
+
 from unittest.mock import patch, mock_open, MagicMock
 
 # Add project root to path so we can import prowldash

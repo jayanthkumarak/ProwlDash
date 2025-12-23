@@ -3,7 +3,7 @@
 Benchmark script for ProwlDash.
 Generates synthetic CSV data and runs prowldash.py to measure performance.
 """
-import os
+
 import sys
 import time
 import subprocess

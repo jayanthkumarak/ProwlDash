@@ -1307,7 +1307,7 @@ def print_banner():
     """Print the ProwlDash ASCII banner with colors."""
     # ANSI Color Codes
     CYAN = "\033[96m"
-    BLUE = "\033[94m"
+
     BOLD = "\033[1m"
     DIM = "\033[2m"
     RESET = "\033[0m"
