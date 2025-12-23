@@ -306,7 +306,7 @@
     <div class="header">
         <h1>ProwlDash</h1>
         <p class="subtitle">Generate interactive compliance dashboards from Prowler security scans</p>
-        <span class="version">v4.5.0</span>
+        <span class="version">v4.6.0</span>
     </div>
 
     <nav class="nav">
@@ -342,13 +342,17 @@
         </section>
 
         <section id="performance">
-            <h2>⚡ Performance (V4.5)</h2>
-            <p>V4.5 introduces significant performance improvements for processing multiple files and large scans.</p>
+            <h2>⚡ Performance (V4.6)</h2>
+            <p>V4.6 introduces significant performance improvements for processing multiple files and large scans.</p>
 
-            <h3>Parallel Processing</h3>
-            <p>When processing multiple CSV files, ProwlDash automatically distributes work across all available CPU
-                cores. Speedup is <strong>linear with CPU cores</strong>: processing N files on an M-core machine
-                completes in approximately 1/min(N,M) the sequential time.</p>
+            <h3>Adaptive Parallel Processing</h3>
+            <p>ProwlDash automatically distributes work across available CPU cores, intelligently bounding workers to
+                avoid overhead on small batches:</p>
+            <ul>
+                <li><strong>Adaptive Scaling:</strong> Uses <code>min(cpu_count, file_count)</code> workers by default.
+                </li>
+                <li><strong>Manual Control:</strong> Override with <code>--max-workers N</code> if needed.</li>
+            </ul>
 
             <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -375,7 +379,7 @@ prowldash data/*.csv</code>
                     <tr>
                         <td>≥ 10 MB</td>
                         <td><code>pandas</code></td>
-                        <td>C-optimized for enterprise-scale scans</td>
+                        <td>Optimized for large files, uses chunked reading to limit memory usage</td>
                     </tr>
                 </tbody>
             </table>
@@ -392,6 +396,18 @@ prowldash data/*.csv</code>
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                 <code>pypy3 prowldash.py data/*.csv</code>
             </div>
+        </section>
+
+        <section id="accessibility">
+            <h2>♿ Accessibility</h2>
+            <p>ProwlDash is designed for inclusive access:</p>
+            <ul>
+                <li><strong>Screen Readers:</strong> Fully ARIA-compliant structure with semantic roles.</li>
+                <li><strong>Keyboard Navigation:</strong> All interactive elements (tabs, filters, cards) are accessible
+                    via Tab/Enter/Space.</li>
+                <li><strong>Visual:</strong> High-contrast dark/light themes and Okabe–Ito colorblind-safe palette for
+                    status indicators.</li>
+            </ul>
         </section>
 
         <section id="how-it-works">
@@ -436,6 +452,11 @@ prowldash data/*.csv</code>
                         <td><code>--framework</code>, <code>-f</code></td>
                         <td>Force specific compliance framework</td>
                         <td><code>--framework hipaa</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--max-workers</code></td>
+                        <td>Limit number of parallel worker processes</td>
+                        <td><code>--max-workers 4</code></td>
                     </tr>
                     <tr>
                         <td><code>--output</code>, <code>-o</code></td>
@@ -671,7 +692,7 @@ prowler aws --compliance aws_well_architected_framework_security_pillar_aws -M c
     </div>
 
     <div class="footer">
-        <p>ProwlDash v4.5.0 — Parallel Processing • Smart Parsing • PyPy Compatible</p>
+        <p>ProwlDash v4.6.0 — Adaptive Parallelism • Smart Parsing • Accessible</p>
     </div>
 
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
