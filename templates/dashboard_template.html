@@ -20,31 +20,31 @@
             --text-primary: #f0f0f5;
             --text-secondary: #9090a0;
             --text-muted: #606070;
-            /* Okabe-Ito colors */
-            --accent-blue: #56B4E9;
-            /* Sky Blue */
-            --accent-green: #009E73;
-            /* Bluish Green (success) */
-            --accent-red: #D55E00;
-            /* Vermillion (error - NOT pure red) */
-            --accent-yellow: #F0E442;
-            /* Yellow */
-            --accent-purple: #CC79A7;
-            /* Reddish Purple */
-            --accent-orange: #E69F00;
-            /* Orange */
-            /* Severity uses distinct hues, not red/green */
-            --severity-critical: #D55E00;
-            /* Vermillion */
-            --severity-high: #E69F00;
-            /* Orange */
-            --severity-medium: #F0E442;
-            /* Yellow */
-            --severity-low: #0072B2;
-            --severity-low: #0072B2;
-            /* Blue */
 
-            /* Branding Tokens */
+            --accent-blue: #56B4E9;
+
+            --accent-green: #009E73;
+
+            --accent-red: #D55E00;
+
+            --accent-yellow: #F0E442;
+
+            --accent-purple: #CC79A7;
+
+            --accent-orange: #E69F00;
+
+
+            --severity-critical: #D55E00;
+
+            --severity-high: #E69F00;
+
+            --severity-medium: #F0E442;
+
+            --severity-low: #0072B2;
+            --severity-low: #0072B2;
+
+
+
             --brand-primary: var(--accent-blue);
             --brand-secondary: var(--accent-purple);
         }
@@ -59,26 +59,26 @@
             --text-primary: #1a1f36;
             --text-secondary: #4a5568;
             --text-muted: #718096;
-            /* Okabe-Ito colors (same hues, work on light bg) */
+
             --accent-blue: #0072B2;
-            /* Blue */
+
             --accent-green: #009E73;
-            /* Bluish Green */
+
             --accent-red: #D55E00;
-            /* Vermillion */
+
             --accent-yellow: #B8860B;
-            /* Darker yellow for contrast */
+
             --accent-purple: #CC79A7;
-            /* Reddish Purple */
+
             --accent-orange: #E69F00;
-            /* Orange */
+
             --severity-critical: #D55E00;
             --severity-high: #E69F00;
             --severity-medium: #B8860B;
-            /* Darker for light bg */
+
             --severity-low: #0072B2;
 
-            /* Branding Tokens */
+
             --brand-primary: var(--accent-blue);
             --brand-secondary: var(--accent-purple);
         }
@@ -651,7 +651,7 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 10px;
-            /* overflow: hidden; Removed to allow sticky header to work with page scroll */
+
         }
 
         .table-header {
@@ -661,9 +661,9 @@
             justify-content: space-between;
             align-items: center;
             background: var(--bg-secondary);
-            /* Ensure opaque background */
+
             position: sticky;
-            /* Make header toolbar sticky too? Optional */
+
             z-index: 11;
         }
 
@@ -677,7 +677,7 @@
             color: var(--text-muted);
         }
 
-        /* .table-scroll removed */
+
 
         .table-scroll::-webkit-scrollbar {
             width: 6px;
@@ -702,10 +702,10 @@
             position: sticky;
             top: 0;
             background: var(--bg-secondary);
-            /* Match table section bg */
+
             z-index: 10;
             box-shadow: 0 1px 0 var(--border);
-            /* Visual separator */
+
         }
 
         th {
@@ -739,38 +739,38 @@
             opacity: 1;
         }
 
-        /* Column widths */
+
         th:nth-child(1) {
             width: 100px;
         }
 
-        /* Check ID */
+
         th:nth-child(2) {
             width: auto;
             min-width: 300px;
         }
 
-        /* Title - flexible */
+
         th:nth-child(3) {
             width: 80px;
         }
 
-        /* Status */
+
         th:nth-child(4) {
             width: 80px;
         }
 
-        /* Severity */
+
         th:nth-child(5) {
             width: 120px;
         }
 
-        /* Account */
+
         th:nth-child(6) {
             width: 90px;
         }
 
-        /* Service */
+
         td {
             padding: 12px 14px;
             font-size: 12px;
@@ -785,7 +785,7 @@
             word-wrap: break-word;
         }
 
-        /* Title wraps */
+
         tbody tr {
             cursor: pointer;
             transition: background 0.1s;
@@ -1241,18 +1241,18 @@
         </div>
     </div>
     <script>
-        /*__DATA__*/
-        // DATA will be injected by the Python generator
+
+
 
         let filtered = [];
-        let activeCardFilter = null; // Track which card is active
-        let activeTab = 'all'; // 'all' or account ID
+        let activeCardFilter = null;
+        let activeTab = 'all';
         const acctClasses = ['acct1', 'acct2', 'acct3', 'acct4'];
 
         function init() {
             initTheme();
 
-            // Set dynamic title based on framework
+
             if (DATA.frameworkInfo) {
                 const fw = DATA.frameworkInfo;
                 const icon = fw.icon || '🔍';
@@ -1266,7 +1266,7 @@
                     'Indupro AWS Accounts | <strong>' + DATA.scanInfo + '</strong>';
             }
 
-            // Render tabs if multi-account
+
             if (DATA.isMultiAccount) {
                 renderTabs();
             }
@@ -1277,7 +1277,7 @@
             populateFilters();
             applyFilters();
 
-            // Filter listeners
+
             ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService', 'filterDelta'].forEach(id => {
                 document.getElementById(id).addEventListener('change', () => {
                     clearCardFilter();
@@ -1289,7 +1289,7 @@
                 applyFilters();
             }, 150));
 
-            // Level Toggle Listener
+
             document.querySelectorAll('#filterLevel button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filterLevel button').forEach(b => b.classList.remove('active'));
@@ -1311,9 +1311,9 @@
             });
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-            // Hide hint after first click
+
             document.querySelectorAll('.summary-card').forEach(card => {
-                // Add keyboard support
+
                 card.setAttribute('tabindex', '0');
                 card.setAttribute('role', 'button');
                 card.addEventListener('keydown', (e) => {
@@ -1402,17 +1402,17 @@
 
             activeTab = tabId;
 
-            // Update tab UI
+
             document.querySelectorAll('.tab').forEach(t => {
                 const isActive = t.dataset.tab === tabId;
                 t.classList.toggle('active', isActive);
                 t.setAttribute('aria-selected', isActive);
             });
 
-            // Clear card filter when switching tabs
+
             clearCardFilter();
 
-            // Re-render everything with new tab context
+
             renderSummary();
             renderSeverity();
             renderCharts();
@@ -1450,7 +1450,7 @@
             event.currentTarget.classList.add('active');
             document.getElementById('btnShowAll').classList.remove('hidden');
 
-            // Reset dropdown filters
+
             ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService', 'filterDelta'].forEach(id => {
                 document.getElementById(id).value = '';
             });
@@ -1461,7 +1461,7 @@
 
         function renderSummary() {
             const s = getActiveStats();
-            const cmp = DATA.stats.hasComparison && activeTab === 'all'; // Only show comparison on All tab
+            const cmp = DATA.stats.hasComparison && activeTab === 'all';
             document.getElementById('summaryGrid').innerHTML = `
                 <div class="summary-card fail" onclick="setCardFilter('status', 'FAIL')">
                     <div class="summary-value">${s.fail}</div>
@@ -1521,10 +1521,10 @@
             const failPct = s.total ? Math.round((s.fail / s.total) * 100) : 0;
             const passPct = s.total ? Math.round((s.pass / s.total) * 100) : 0;
 
-            // For account chart, show all accounts or hide if single account tab
+
             const byAcct = activeTab === 'all' ? DATA.byAccount : {};
 
-            // Calculate service breakdown for active tab
+
             const activeFindings = getActiveFindings();
             const svcMap = {};
             activeFindings.forEach(f => {
@@ -1632,21 +1632,21 @@
             let delta = document.getElementById('filterDelta').value;
             let search = document.getElementById('filterSearch').value.toLowerCase();
 
-            // Get active level
+
             const activeLevelBtn = document.querySelector('#filterLevel button.active');
             const level = activeLevelBtn ? activeLevelBtn.dataset.val : '';
 
-            // Apply card filter if active
+
             if (activeCardFilter) {
                 if (activeCardFilter.type === 'status') status = activeCardFilter.value;
                 if (activeCardFilter.type === 'severity') {
                     severity = activeCardFilter.value;
-                    status = 'FAIL'; // Severity only applies to failures
+                    status = 'FAIL';
                 }
                 if (activeCardFilter.type === 'delta') delta = activeCardFilter.value;
             }
 
-            // Start with findings filtered by active tab
+
             filtered = getActiveFindings().filter(r => {
                 if (acct && r.acctId !== acct) return false;
                 if (status && r.status !== status) return false;
@@ -1661,7 +1661,7 @@
                         r.profile || '', r.mitre ? r.mitre.join(' ') : ''
                     ].join(' ').toLowerCase();
 
-                    // Support multi-keyword search (AND logic)
+
                     const terms = search.split(/\s+/);
                     return terms.every(term => hay.includes(term));
                 }
@@ -1707,7 +1707,7 @@
                 if (r.mitre && r.mitre.length) {
                     metaBadges += '<div class="meta-badges">';
                     r.mitre.forEach(m => {
-                        // MITRE URL format uses slashes for sub-techniques (T1552.001 -> T1552/001)
+
                         const url = `https://attack.mitre.org/techniques/${m.replace('.', '/')}/`;
                         metaBadges += `<a href="${url}" target="_blank" class="badge mitre" onclick="event.stopPropagation()">${m}</a>`;
                     });
@@ -1810,25 +1810,25 @@
                 return;
             }
 
-            // Define columns
+
             const cols = ['id', 'title', 'status', 'severity', 'acctId', 'region', 'service', 'resource', 'profile', 'mitre'];
 
-            // Header
+
             let csv = cols.join(',') + '\\n';
 
-            // Rows
+
             filtered.forEach(r => {
                 const row = cols.map(c => {
                     let val = r[c] || '';
                     if (Array.isArray(val)) val = val.join(' ');
-                    // Escape quotes and wrap in quotes
+
                     val = String(val).replace(/"/g, '""');
                     return `"${val}"`;
                 });
                 csv += row.join(',') + '\\n';
             });
 
-            // Trigger download
+
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1857,17 +1857,17 @@
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
 
-                // Helper to add element to PDF
+
                 const addElement = async (selector, yOffset) => {
                     const el = document.querySelector(selector);
                     if (!el) return yOffset;
 
                     const canvas = await html2canvas(el, { scale: 1.5, useCORS: true, logging: false });
                     const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = pageWidth - 20; // 10mm margins
+                    const imgWidth = pageWidth - 20;
                     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    // Check if new page needed
+
                     if (yOffset + imgHeight > pageHeight - 10) {
                         doc.addPage();
                         yOffset = 10;
@@ -1878,7 +1878,7 @@
                 };
 
                 let y = 10;
-                // Add Header (custom text instead of screenshot to save space)
+
                 doc.setFontSize(18);
                 doc.text("ProwlDash Compliance Report", 10, y);
                 y += 10;
@@ -1886,13 +1886,13 @@
                 doc.text(`Generated: ${new Date().toLocaleString()}`, 10, y);
                 y += 10;
 
-                // Capture Summary Cards
+
                 y = await addElement('.summary-grid', y);
 
-                // Capture Charts
+
                 y = await addElement('#chartsRow', y);
 
-                // Add note about full data
+
                 if (y > pageHeight - 30) {
                     doc.addPage();
                     y = 10;
@@ -1913,13 +1913,14 @@
             }
         }
 
-        // Add listener
+
         document.getElementById('btnExportPDF').addEventListener('click', exportPDF);
 
         init();
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </body>
 
 </html>
