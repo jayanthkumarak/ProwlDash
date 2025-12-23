@@ -33,3 +33,11 @@ jobs:
 
       - name: Smoke test - list frameworks
         run: python3 prowldash.py --list-frameworks
+
+      - name: Run Tests
+        run: |
+          python3 tests/test_core.py
+          python3 tests/test_integration.py
+
+      - name: Benchmark
+        run: python3 tools/benchmark.py --files 4 --rows 1000

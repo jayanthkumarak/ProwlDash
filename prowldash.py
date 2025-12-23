@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prowler Dashboard Generator V4.5
+Prowler Dashboard Generator V4.6
 
 Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
@@ -293,8 +293,13 @@ def parse_csv(filepath: str) -> list[dict]:
     
     if use_pandas:
         try:
-            df = pd.read_csv(filepath, delimiter=";", dtype=str, keep_default_na=False)
-            return df.to_dict('records')
+            # Use chunksize to avoid loading entire DataFrame into memory at once
+            # This prevents holding both the DF and the list[dict] in memory simultaneously
+            rows = []
+            with pd.read_csv(filepath, delimiter=";", dtype=str, keep_default_na=False, chunksize=5000) as reader:
+                for chunk in reader:
+                    rows.extend(chunk.to_dict('records'))
+            return rows
         except MemoryError:
             print(f"  ⚠️  Memory error parsing {os.path.basename(filepath)} - file too large")
             print("      Consider splitting the file or increasing system memory")
@@ -717,10 +722,27 @@ def sort_findings(findings: list[dict]) -> list[dict]:
     ))
 
 
+def safe_json_dumps(data: dict) -> str:
+    """Dump JSON with escaping to prevent XSS when embedded in HTML.
+    
+    Escapes <, >, and / characters to prevent breaking out of script tags
+    or executing arbitrary HTML.
+    """
+    # Standard JSON dump
+    json_str = json.dumps(data, separators=(",", ":"))
+    
+    # Replace unsafe characters
+    # replace / with \/ to prevent </script> attacks
+    # replace < with \u003c
+    # replace > with \u003e
+    return json_str.replace("/", "\\/").replace("<", "\\u003c").replace(">", "\\u003e")
+
+
 def generate_html(data: dict, framework: str) -> str:
     """Generate complete HTML with embedded data."""
     template = get_template(framework)
-    json_data = json.dumps(data, separators=(",", ":"))
+    # Use safe_json_dumps to prevent XSS
+    json_data = safe_json_dumps(data)
     return template.replace("/*__DATA__*/", f"const DATA = {json_data};")
 
 
@@ -745,7 +767,7 @@ def show_help():
     """Display comprehensive help information."""
     help_text = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V4.5                          ║
+║                    PROWLER DASHBOARD GENERATOR V4.6                          ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION
@@ -761,6 +783,7 @@ OPTIONS
   --version, -v           Show version information
   --output, -o <path>     Output directory (default: ./output)
   --framework, -f <name>  Force specific framework (auto-detected if omitted)
+  --max-workers <num>     Limit number of parallel workers (default: auto)
   --no-timestamp          Don't create timestamped subfolder
   --list-frameworks       List all supported frameworks
 
@@ -830,7 +853,7 @@ def list_frameworks():
 
 def show_version():
     """Display version information."""
-    print("ProwlDash V4.5.0")
+    print("ProwlDash V4.6.0")
     perf_mode = "Pandas + Parallel" if USE_PANDAS else "Parallel (pip install pandas for faster parsing)"
     print(f"Performance: {perf_mode}")
     print(f"Supports {len(FRAMEWORK_REGISTRY)}+ compliance frameworks")
@@ -1029,6 +1052,7 @@ def parse_args(argv: list) -> dict:
         'framework': None,
         'no_timestamp': False,
         'list_frameworks': False,
+        'max_workers': None,
     }
 
     i = 1
@@ -1049,6 +1073,20 @@ def parse_args(argv: list) -> dict:
                 continue
             else:
                 print("Error: --framework requires a framework name")
+                sys.exit(1)
+        elif arg == '--max-workers':
+            if i + 1 < len(argv):
+                try:
+                    args['max_workers'] = int(argv[i + 1])
+                    if args['max_workers'] < 1:
+                        raise ValueError
+                except ValueError:
+                    print("Error: --max-workers requires a positive integer")
+                    sys.exit(1)
+                i += 2
+                continue
+            else:
+                print("Error: --max-workers requires a number")
                 sys.exit(1)
         elif arg == '--no-timestamp':
             args['no_timestamp'] = True
@@ -1090,7 +1128,16 @@ def main():
         sys.exit(1)
 
     # Parallel file processing
-    worker_count = os.cpu_count() or 4
+    cpu_count = os.cpu_count() or 4
+    
+    # Adaptive worker count:
+    # 1. User override if provided
+    # 2. Otherwise min(cpu_count, file_count) to avoid overhead for small batches
+    if args.get('max_workers'):
+        worker_count = args['max_workers']
+    else:
+        worker_count = min(cpu_count, len(files))
+        
     perf_mode = "Pandas + Parallel" if USE_PANDAS else "Parallel"
     print(f"Processing {len(files)} file(s) [{perf_mode}, {worker_count} workers]...")
 

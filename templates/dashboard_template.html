@@ -96,7 +96,6 @@
             align-items: center;
         }
 
-        .header-left {}
 
         .header h1 {
             font-size: 24px;
@@ -1034,10 +1033,13 @@
             <span id="themeLabel">Light</span>
         </button>
     </div>
-    <div class="tab-bar hidden" id="tabBar">
+    <span id="themeLabel">Light</span>
+    </button>
+    </div>
+    <div class="tab-bar hidden" id="tabBar" role="tablist" aria-label="Account Tabs">
         <!-- Tabs will be dynamically generated -->
     </div>
-    <div class="container">
+    <div class="container" role="tabpanel">
         <div class="section-header">
             <div class="section-title">Executive Summary</div>
             <div style="display:flex;align-items:center;gap:16px;">
@@ -1055,13 +1057,13 @@
         <div class="section-title" style="margin-bottom:14px">Detailed Findings</div>
         <div class="filters-bar">
             <div class="filter-group">
-                <label>Account</label>
+                <label for="filterAccount">Account</label>
                 <select id="filterAccount">
                     <option value="">All Accounts</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Status</label>
+                <label for="filterStatus">Status</label>
                 <select id="filterStatus">
                     <option value="">All</option>
                     <option value="FAIL">FAIL</option>
@@ -1070,7 +1072,7 @@
                 </select>
             </div>
             <div class="filter-group">
-                <label>Severity</label>
+                <label for="filterSeverity">Severity</label>
                 <select id="filterSeverity">
                     <option value="">All</option>
                     <option value="critical">Critical</option>
@@ -1080,19 +1082,19 @@
                 </select>
             </div>
             <div class="filter-group">
-                <label>Region</label>
+                <label for="filterRegion">Region</label>
                 <select id="filterRegion">
                     <option value="">All Regions</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Service</label>
+                <label for="filterService">Service</label>
                 <select id="filterService">
                     <option value="">All Services</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Change</label>
+                <label for="filterDelta">Change</label>
                 <select id="filterDelta">
                     <option value="">All</option>
                     <option value="fixed">Fixed</option>
@@ -1100,7 +1102,7 @@
                 </select>
             </div>
             <div class="filter-group">
-                <label>Search</label>
+                <label for="filterSearch">Search</label>
                 <input type="text" id="filterSearch" placeholder="ID, resource...">
             </div>
             <button class="btn-reset" id="btnReset">Reset</button>
@@ -1197,6 +1199,16 @@
 
             // Hide hint after first click
             document.querySelectorAll('.summary-card').forEach(card => {
+                // Add keyboard support
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        card.click();
+                    }
+                });
+
                 card.addEventListener('click', () => {
                     document.getElementById('clickHint').style.display = 'none';
                 });
@@ -1241,15 +1253,28 @@
             tabBar.classList.remove('hidden');
 
             const accountIds = Object.keys(DATA.accounts);
-            let html = `<div class="tab active" data-tab="all" onclick="setTab('all')">
+            let html = `<div class="tab ${(activeTab === 'all' ? 'active' : '')}" 
+                data-tab="all" 
+                onclick="setTab('all')" 
+                role="tab" 
+                tabindex="0" 
+                aria-selected="${activeTab === 'all'}"
+                onkeydown="if(event.key==='Enter'||event.key===' ')setTab('all')">
                 <span>All Accounts</span>
                 <span class="tab-count">${DATA.stats.total}</span>
             </div>`;
 
             accountIds.forEach(acctId => {
                 const acct = DATA.accounts[acctId];
+                const isActive = activeTab === acctId;
                 const acctStats = DATA.accountStats[acctId] || { total: 0 };
-                html += `<div class="tab" data-tab="${acctId}" onclick="setTab('${acctId}')">
+                html += `<div class="tab ${(isActive ? 'active' : '')}" 
+                    data-tab="${acctId}" 
+                    onclick="setTab('${acctId}')"
+                    role="tab" 
+                    tabindex="0"
+                    aria-selected="${isActive}"
+                    onkeydown="if(event.key==='Enter'||event.key===' ')setTab('${acctId}')">
                     <span>${acct.display || acct.name}</span>
                     <span class="tab-count">${acctStats.total}</span>
                 </div>`;
@@ -1265,7 +1290,9 @@
 
             // Update tab UI
             document.querySelectorAll('.tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.tab === tabId);
+                const isActive = t.dataset.tab === tabId;
+                t.classList.toggle('active', isActive);
+                t.setAttribute('aria-selected', isActive);
             });
 
             // Clear card filter when switching tabs

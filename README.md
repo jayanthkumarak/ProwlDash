@@ -19,6 +19,12 @@ ProwlDash supports 21 compliance frameworks including CIS AWS Benchmark, AWS Fou
 
 ProwlDash is a single Python file with zero required dependencies. Optional dependencies enhance performance for large-scale scans.
 
+### Prerequisites
+
+- Python 3.7+
+- Memory: 500MB+ available (scaling with file size)
+- CPU: Multi-core recommended for faster processing
+
 ### Using pip
 
 ```bash
@@ -198,7 +204,7 @@ ProwlDash selects the optimal CSV parser based on file size:
 | File Size | Parser | Reason |
 |-----------|--------|--------|
 | < 10 MB | stdlib csv | Lower overhead, 2x faster for typical scans |
-| ≥ 10 MB | Pandas | C-optimized for enterprise-scale scans |
+| ≥ 10 MB | Pandas | Optimized for large files, uses chunked reading to limit memory usage |
 
 To enable Pandas acceleration for large files:
 
@@ -215,6 +221,14 @@ pypy3 prowldash.py data/*.csv
 ```
 
 PyPy's JIT compiler provides 2-5x speedup on pure Python code paths.
+
+## Accessibility
+
+ProwlDash dashboards are designed to be inclusive:
+- **Colorblind-friendly**: Validated Okabe–Ito color palette for severity and status.
+- **Keyboard Navigation**: Full support for tab and keyboard interactions on interactive elements.
+- **ARIA Support**: Proper roles and attributes for screen readers.
+- **Theme Support**: High-contrast dark and light modes.
 
 ## Requirements
 
