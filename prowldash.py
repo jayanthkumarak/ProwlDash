@@ -792,9 +792,9 @@ def list_frameworks():
 
 def show_version():
     """Display version information."""
-    print("Prowler Dashboard Generator V3.0")
+    print("ProwlDash V4.3.0")
     print(f"Supports {len(FRAMEWORK_REGISTRY)}+ compliance frameworks")
-    print("Python 3.8+ required (no external dependencies)")
+    print("Python 3.7+ required (no external dependencies)")
 
 
 def generate_landing_page(generated_files: list, scan_info: str, stats_by_fw: dict) -> str:

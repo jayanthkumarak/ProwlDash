@@ -306,14 +306,16 @@
     <div class="header">
         <h1>ProwlDash</h1>
         <p class="subtitle">Generate interactive compliance dashboards from Prowler security scans</p>
-        <span class="version">v4.0</span>
+        <span class="version">v4.3.0</span>
     </div>
 
     <nav class="nav">
         <a href="#quick-start">Quick Start</a>
+        <a href="#how-it-works">How It Works</a>
         <a href="#cli-reference">CLI Reference</a>
         <a href="#frameworks">Frameworks</a>
         <a href="#prowler">Prowler Integration</a>
+        <a href="#troubleshooting">Troubleshooting</a>
     </nav>
 
     <div class="container">
@@ -337,6 +339,31 @@
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                 <code>python3 prowldash.py --framework aws-well-architected report.csv</code>
             </div>
+        </section>
+
+        <section id="how-it-works">
+            <h2>How It Works</h2>
+            <p>ProwlDash processes Prowler CSV exports through four stages to produce interactive dashboards.</p>
+
+            <h3>1. Parse CSV Input</h3>
+            <p>ProwlDash reads one or more CSV files exported from Prowler. It normalizes the data regardless of whether
+                you used Prowler's main output format or compliance-specific format.</p>
+
+            <h3>2. Detect Framework</h3>
+            <p>The tool examines the CSV content and filename to determine which compliance framework applies. Detection
+                checks the COMPLIANCE column for framework identifiers like "CIS-5.0" or "HIPAA", and falls back to
+                filename patterns such as "cis_report.csv". You can override detection using the
+                <code>--framework</code> flag.</p>
+
+            <h3>3. Compute Statistics</h3>
+            <p>ProwlDash aggregates findings by status (pass, fail, manual), severity (critical, high, medium, low),
+                service, and account. When processing multiple scans from different dates, it computes delta information
+                to highlight fixed issues and new failures.</p>
+
+            <h3>4. Generate HTML</h3>
+            <p>The final step embeds all data into a self-contained HTML file. The dashboard includes interactive
+                charts, filterable tables, and detailed finding information. No external dependencies are required to
+                view the output.</p>
         </section>
 
         <section id="cli-reference">
@@ -561,10 +588,36 @@ prowler aws --compliance aws_well_architected_framework_security_pillar_aws -M c
                 </p>
             </div>
         </section>
+
+        <section id="troubleshooting">
+            <h2>Troubleshooting</h2>
+
+            <h3>"No CSV files provided" error</h3>
+            <p>Ensure you pass at least one CSV file path as an argument. ProwlDash requires explicit file paths; it
+                does not read from standard input.</p>
+
+            <h3>Wrong framework detected</h3>
+            <p>When ProwlDash selects an incorrect framework, override detection using the <code>--framework</code> flag
+                with the appropriate framework ID. Run <code>prowldash --list-frameworks</code> to see available IDs.
+            </p>
+
+            <h3>Empty or missing data in dashboard</h3>
+            <p>Verify your CSV uses Prowler's main output format, which includes the SEVERITY column.
+                Compliance-specific exports may lack fields needed for complete dashboard statistics. Re-run Prowler
+                with <code>-M csv</code> to generate the correct format.</p>
+
+            <h3>Dashboard shows no failures</h3>
+            <p>If your scan has no failing checks, the dashboard will show all findings as passed. This is expected
+                behavior for compliant environments.</p>
+
+            <h3>File encoding issues</h3>
+            <p>ProwlDash expects UTF-8 encoded CSV files. If your CSV contains unusual characters or fails to parse,
+                check the file encoding and convert to UTF-8 if necessary.</p>
+        </section>
     </div>
 
     <div class="footer">
-        <p>Prowler Dashboard Generator v3.0 • Built with ❤️ for security teams</p>
+        <p>ProwlDash v4.3.0</p>
     </div>
 
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
