@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Improved CSV parser selection logic.
 - Updated documentation with performance journey and accessibility details.
+- Fixed CI failure on environments without Pandas installed.
 
 ## [4.5.0] - 2025-12-22
 - Multi-process parallel execution for bulk CSV processing.

@@ -34,6 +34,7 @@ try:
     USE_PANDAS = True
 except ImportError:
     USE_PANDAS = False
+    pd = None
 
 
 # =============================================================================
