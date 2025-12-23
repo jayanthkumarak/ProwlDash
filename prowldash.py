@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prowler Dashboard Generator V4.9.0
+Prowler Dashboard Generator V4.9.1
 
 Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
@@ -37,7 +37,7 @@ except ImportError:
     pd = None
 
 
-VERSION = "4.9.0"
+VERSION = "4.9.1"
 
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here
@@ -446,6 +446,29 @@ def detect_primary_framework(rows: list[dict], filepath: str = "", user_framewor
     return "cis"  # Default fallback
 
 
+def extract_mitre_techniques(compliance_str: str) -> list[str]:
+    """Extract MITRE ATT&CK technique IDs from COMPLIANCE column.
+    
+    Format: "MITRE-ATTACK: T1552 | CIS-2.0: 1.4"
+    Returns: ["T1552"]
+    """
+    if not compliance_str:
+        return []
+
+    techniques = []
+    parts = compliance_str.split("|")
+    for part in parts:
+        part = part.strip()
+        # Look for MITRE pattern variants
+        if "MITRE" in part.upper() and ":" in part:
+            # Format: "MITRE-ATTACK: T1552"
+            val = part.split(":")[1].strip()
+            # Basic validation for T-code format (Txxxx)
+            if val.startswith("T") and len(val) >= 5:
+                techniques.append(val)
+    return techniques
+
+
 def detect_framework_from_filename(filepath: str) -> str:
     """Detect framework from filename."""
     name = os.path.basename(filepath).lower()
@@ -511,7 +534,9 @@ def normalize_row(row: dict, csv_format: str) -> dict:
             "risk": row.get("RISK", ""),
             "remediation": row.get("REMEDIATION_RECOMMENDATION_TEXT", ""),
             "remediationUrl": row.get("REMEDIATION_RECOMMENDATION_URL", ""),
+            "remediationUrl": row.get("REMEDIATION_RECOMMENDATION_URL", ""),
             "compliance": row.get("COMPLIANCE", ""),
+            "mitre": extract_mitre_techniques(row.get("COMPLIANCE", "")),
             "_raw": row,
         }
     else:
@@ -533,6 +558,7 @@ def normalize_row(row: dict, csv_format: str) -> dict:
             "remediationUrl": "",
 
             "compliance": row.get("FRAMEWORK", ""),
+            "mitre": list(set(extract_mitre_techniques(row.get("FRAMEWORK", "")) + extract_mitre_techniques(row.get("REQUIREMENTS_ATTRIBUTES_SECTION", "")))),
             "profile": row.get("REQUIREMENTS_ATTRIBUTES_PROFILE", ""),
             "section": row.get("REQUIREMENTS_ATTRIBUTES_SECTION", ""),
             "rationale": row.get("REQUIREMENTS_ATTRIBUTES_RATIONALESTATEMENT", ""),
@@ -718,6 +744,7 @@ def extract_finding(row: dict) -> dict:
         "profile": row.get("profile", ""),
         "section": row.get("section", ""),
         "rationale": row.get("rationale", ""),
+        "mitre": row.get("mitre", []),
     }
 
 
@@ -777,7 +804,7 @@ def show_help():
     """Display comprehensive help information."""
     help_text = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V4.9.0                        ║
+║                    PROWLER DASHBOARD GENERATOR V4.9.1                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION

@@ -798,6 +798,38 @@
             color: var(--severity-medium);
         }
 
+        .badge.l1 {
+            background: rgba(0, 158, 115, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 158, 115, 0.3);
+        }
+
+        .badge.l2 {
+            background: rgba(230, 159, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(230, 159, 0, 0.3);
+        }
+
+        .badge.mitre {
+            background: rgba(204, 121, 167, 0.15);
+            color: var(--accent-purple);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .badge.mitre:hover {
+            background: rgba(204, 121, 167, 0.3);
+            text-decoration: underline;
+        }
+
+        .meta-badges {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
         .severity-badge.low {
             background: rgba(59, 130, 246, 0.15);
             color: var(--severity-low);
@@ -1573,9 +1605,27 @@
             tbody.innerHTML = filtered.map((r, i) => {
                 const deltaTag = r.delta === 'fixed' ? '<span class="badge-sm fixed">FIXED</span>' :
                     r.delta === 'new-fail' ? '<span class="badge-sm new">NEW</span>' : '';
+                let metaBadges = '';
+                if (r.profile) {
+                    const p = r.profile.toLowerCase();
+                    if (p.includes('level 1')) metaBadges += '<span class="badge l1">L1</span>';
+                    if (p.includes('level 2')) metaBadges += '<span class="badge l2">L2</span>';
+                }
+                if (r.mitre && r.mitre.length) {
+                    metaBadges += '<div class="meta-badges">';
+                    r.mitre.forEach(m => {
+                        metaBadges += `<a href="https://attack.mitre.org/techniques/${m}/" target="_blank" class="badge mitre" onclick="event.stopPropagation()">${m}</a>`;
+                    });
+                    metaBadges += '</div>';
+                }
                 const sevBadge = r.severity ? `<span class="severity-badge ${r.severity}">${r.severity}</span>` : '<span class="severity-badge">-</span>';
                 return `<tr data-idx="${i}">
-                    <td><span class="check-id">${esc(r.id)}</span></td>
+                    <td>
+                        <span class="check-id">${esc(r.id)}</span>
+                        <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
+                            ${metaBadges}
+                        </div>
+                    </td>
                     <td>
                         <div>${esc(truncate(r.title, 50))}</div>
                         <div class="check-desc">${esc(truncate(r.statusExt, 40))}</div>

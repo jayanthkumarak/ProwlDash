@@ -1,6 +1,6 @@
 # ProwlDash
 
-[![Version](https://img.shields.io/badge/version-4.9.0-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.9.1-brightgreen.svg)](CHANGELOG.md)
 [![CI](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/)
@@ -13,6 +13,7 @@ The tool runs entirely offline, requires no infrastructure, and scales to handle
 
 *   **Offline Availability**: Generates a single HTML file with embedded data and logic. No server or external dependencies required.
 *   **Universal Support**: Automatically detects and adapts to 40+ compliance frameworks (CIS, PCI-DSS, HIPAA, NIST, etc.).
+*   **Compliance Metadata**: Visualizes CIS Levels (L1/L2) and links MITRE ATT&CK techniques directly to the knowledge base.
 *   **Robust Parsing**: Enhanced CSV parser handles complex Prowler outputs, including compliance-specific metadata and malformed fields.
 *   **Adaptive Performance**: Utilizes a hybrid parsing engine that switches between standard library CSV (low overhead) and Pandas (high throughput) based on file size, parallelizing work across available CPU cores.
 *   **Security Focused**: Implements strict output encoding to prevent injection attacks from untrusted input data.
