@@ -1,137 +1,87 @@
-<div align="center">
-
 # ProwlDash
 
-[![Version](https://img.shields.io/badge/version-4.6.0-brightgreen.svg)](CHANGELOG.md)
-[![CI](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/)
+ProwlDash converts [Prowler](https://github.com/prowler-cloud/prowler) CSV reports into interactive, self-contained HTML dashboards. It enables security teams to distribute compliance findings to stakeholders who lack access to the AWS console or Prowler's raw output.
 
-**Enterprise-grade compliance dashboards for AWS security.**  
-Turn raw [Prowler](https://github.com/prowler-cloud/prowler) CSV data into interactive, executive-ready HTML reports.
+The tool runs entirely offline, requires no infrastructure, and scales to handle data from hundreds of AWS accounts.
 
-[Quick Start](#-quick-start) • [Features](#-key-features) • [Installation](#-installation) • [Documentation](docs/index.html)
+## Features
 
-</div>
+*   **Offline Availability**: Generates a single HTML file with embedded data and logic. No server or external dependencies required.
+*   **Universal Support**: Automatically detects and adapts to 40+ compliance frameworks (CIS, PCI-DSS, HIPAA, NIST, etc.).
+*   **Adaptive Performance**: Utilizes a hybrid parsing engine that switches between standard library CSV (low overhead) and Pandas (high throughput) based on file size, parallelizing work across available CPU cores.
+*   **Security Focused**: Implements strict output encoding to prevent injection attacks from untrusted input data.
+*   **Accessibility**: Built with semantic HTML and ARIA roles to ensure usability for all users.
 
----
+## Installation
 
-## 🚀 Why ProwlDash?
+ProwlDash is a standalone Python utility. It can be installed directly from the repository.
 
-Security teams struggle to share compliance data with stakeholders who lack AWS console access. Raw CSVs are unreadable; PDF reports are static and huge. 
+### Requirements
+*   Python 3.7+
+*   (Optional) `pandas` for accelerated processing of large datasets (>10MB).
 
-**ProwlDash** bridges this gap by generating **self-contained, interactive HTML dashboards** that run offline. No server required.
-
-- **📊 Executive Ready:** Beautiful, themed dashboards with high-level summaries.
-- **⚡ Blazing Fast:** Process 100,000+ findings in seconds using all CPU cores.
-- **🔒 Secure & Offline:** Zero external dependencies. Your data never leaves your machine.
-- **♿ Accessible:** Full WCAG support with dark/light modes and colorblind-safe palettes.
-
-## ✨ Key Features
-
-| Feature | Description |
-| :--- | :--- |
-| **Universal Support** | Auto-detects 40+ frameworks (CIS, HIPAA, PCI-DSS, NIST, etc.) |
-| **Smart Parsing** | Adaptive hybrid engine uses Pandas for huge files (>10MB) and stdlib for speed on small ones. |
-| **Diff Engine** | Compare two scans to visualize remediation progress (Fixed vs. New Failures). |
-| **Multi-Account** | Merge scans from 50+ AWS accounts into a single unified dashboard. |
-| **Zero-Config** | No database, no API keys, no intricate setup. Just Python. |
-
-## 📦 Installation
-
-ProwlDash is a standalone Python tool. 
-
-### Recommended (pip)
-Install directly from source to get the `prowldash` command system-wide:
-
+### Install via pip
 ```bash
 pip install git+https://github.com/jayanthkumarak/ProwlDash.git
 ```
 
-### From Source
+### Run from Source
 ```bash
 git clone https://github.com/jayanthkumarak/ProwlDash.git
 cd ProwlDash
-# No install needed, just run the script
 python3 prowldash.py --help
 ```
 
-> **Note:** Python 3.7+ required. `pip install pandas` is optional but recommended for large datasets.
+## Usage
 
-## ⚡ Quick Start
+### Basic Generation
+Generate a dashboard from a single Prowler CSV export. The output will be saved to a timestamped directory in `./output/`.
 
-1.  **Generate a Prowler CSV report**:
-    ```bash
-    prowler aws --compliance cis_5.0_aws -M csv
-    ```
-
-2.  **Create your dashboard**:
-    ```bash
-    prowldash output.csv
-    ```
-
-3.  **View results**:
-    Open `output/YYYY-MM-DD_HHMMSS/index.html` in your browser.
-
-## 📖 Usage Guide
-
-### Processing Multiple Accounts
-Pass multiple files or use wildcards to merge results into one view:
 ```bash
+prowldash prowler-output.csv
+```
+
+### Multi-Account Aggregation
+Pass multiple CSV files to merge them into a unified dashboard. This allows for a centralized view of compliance across an entire organization.
+
+```bash
+prowldash account-a.csv account-b.csv account-c.csv
+# or using glob patterns
 prowldash data/*.csv
 ```
 
-### Tracking Remediation
-Compare a new scan against an old baseline to see what changed:
+### Remediation Tracking
+Provide two scan files to compare changes over time. The dashboard will highlight issues that have been fixed and identify new failures.
+
 ```bash
-prowldash old_scan.csv new_scan.csv
+prowldash baseline.csv latest.csv
 ```
 
-### Power User Options
-```bash
-# Force a specific framework ID (override detection)
-prowldash --framework pci-dss scan.csv
+### Configuration Options
 
-# Limit parallel workers (useful for shared CI runners)
-prowldash --max-workers 2 scan.csv
-
-# Output to a specific static directory
-prowldash --no-timestamp --output ./public scan.csv
-```
-
-See the [Full Documentation](docs/index.html) for all CLI options.
-
-## 🏆 Performance
-
-V4.6 is engineered for scale.
-
-*   **Concurrency:** Automatically parallelizes across `min(cpu_count, file_count)` workers.
-*   **Throughput:** Benchmarked at **~28,000 rows/second** on standard hardware.
-*   **Memory Safety:** Uses chunked streaming for files >10MB to prevent OOM errors.
-
-## 🧩 Supported Frameworks
-
-<details>
-<summary><strong>Click to expand full list (40+)</strong></summary>
-
-| ID | Framework |
+| Flag | Description |
 | :--- | :--- |
-| `cis` | CIS AWS Foundations Benchmark |
-| `fsbp` | AWS Foundational Security Best Practices |
-| `pci-dss` | PCI DSS 3.2.1 / 4.0 |
-| `hipaa` | HIPAA Security Rule |
-| `nist-800-53` | NIST SP 800-53 |
-| `soc2` | ACIPA SOC 2 |
-| `gdpr` | EU GDPR |
-| `iso27001` | ISO/IEC 27001 |
-| ...and many more | (Auto-detected from CSV) |
+| `--framework <ID>` | Force a specific framework ID (e.g., `pci-dss`), overriding auto-detection. |
+| `--output <DIR>` | Specify a custom output directory. |
+| `--no-timestamp` | Disable the creation of timestamped subdirectories. |
+| `--max-workers <N>` | Limit the number of parallel worker processes. |
 
-</details>
+## Supported Frameworks
 
-## 🤝 Contributing
+ProwlDash supports all major Prowler compliance frameworks, including:
+*   **CIS AWS Foundations Benchmark** (`cis`)
+*   **AWS Foundational Security Best Practices** (`fsbp`)
+*   **PCI DSS** (`pci-dss`)
+*   **HIPAA** (`hipaa`)
+*   **NIST SP 800-53** (`nist-800-53`)
+*   **SOC 2** (`soc2`)
+*   **ISO 27001** (`iso27001`)
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to set up your development environment and run tests.
+For a complete list of supported IDs, run:
+```bash
+prowldash --list-frameworks
+```
 
-## 📄 License
+## License
 
-Apache-2.0 © [Jayanth Kumar](https://github.com/jayanthkumarak)
+Apache-2.0
