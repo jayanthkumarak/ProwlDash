@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2025-12-23
+### Removed
+- **Export Functionality**: Removed Client-side PDF and CSV export buttons and dependencies (`html2canvas`, `jsPDF`) to simplify logic and reduce external requests.
+- **CIS Level Filters**: Removed "Level 1" and "Level 2" filtering and badging due to inconsistent profile matching in Prowler data.
+
 ## [5.0.3] - 2025-12-23
 ### Changed
 - **UX**: Added tooltips to L1/L2 compliance badges to verify "CIS Profile Maturity" context.

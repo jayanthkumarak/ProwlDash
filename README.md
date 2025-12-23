@@ -1,6 +1,6 @@
 # ProwlDash
 
-[![Version](https://img.shields.io/badge/version-5.0.3-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.1.0-brightgreen.svg)](CHANGELOG.md)
 [![CI](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/)
@@ -17,13 +17,10 @@ The tool runs entirely offline, requires no infrastructure, and is designed to s
 *   **Deep Linking**: Direct links to AWS Console resources.
 
 ### Compliance Intelligence
-*   **CIS Benchmarks**: Visualizes CIS Level 1 and Level 2 profiles.
 *   **MITRE ATT&CK**: Maps findings to MITRE Tactics and Techniques with links to the official Knowledge Base.
 *   **Framework Agnostic**: Supports 40+ frameworks including PCI-DSS, HIPAA, NIST 800-53, SOC2, and FSBP.
 
 ### Reporting
-*   **PDF Export**: Generates executive summary PDFs directly from the browser.
-*   **CSV Export**: Exports filtered datasets for external analysis.
 *   **Customization**: Supports Dark Mode and custom corporate branding via CSS.
 
 ### Performance & Security

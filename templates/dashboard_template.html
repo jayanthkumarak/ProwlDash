@@ -1184,52 +1184,36 @@
                     <option value="">All Services</option>
                 </select>
             </div>
-            <div class="filter-toggle" id="filterLevel">
-                <button class="active" data-val="">All Levels</button>
-                <button data-val="Level 1">L1</button>
-                <button data-val="Level 2">L2</button>
-            </div>
-            <div class="filter-group">
-                <label for="filterDelta">Change</label>
-                <select id="filterDelta">
-                    <option value="">All</option>
-                    <option value="fixed">Fixed</option>
-                    <option value="new-fail">New Failures</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="filterSearch">Search</label>
-                <input type="text" id="filterSearch" placeholder="ID, resource...">
-            </div>
-            <div class="filter-group hint-text" style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-                <span style="font-size:12px; font-weight:500; color:var(--text-muted)">Export:</span>
-                <button onclick="exportCSV()" class="btn-link" title="Download CSV">CSV</button>
-                <span style="color:var(--border)">|</span>
-                <button onclick="exportPDF()" class="btn-link" id="btnExportPDF" title="Download PDF">PDF</button>
-            </div>
-            <button class="btn-reset" id="btnReset">Reset Filters</button>
+            </select>
         </div>
-        <div class="table-section">
-            <div class="table-header">
-                <h2>Security Controls</h2>
-                <span class="result-info" id="resultInfo"></span>
-            </div>
-            <div class="table-scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Check ID</th>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Severity</th>
-                            <th>Account</th>
-                            <th>Service</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
+        <div class="filter-group">
+            <label for="filterSearch">Search</label>
+            <input type="text" id="filterSearch" placeholder="ID, resource...">
         </div>
+
+        <button class="btn-reset" id="btnReset">Reset Filters</button>
+    </div>
+    <div class="table-section">
+        <div class="table-header">
+            <h2>Security Controls</h2>
+            <span class="result-info" id="resultInfo"></span>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Check ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Severity</th>
+                        <th>Account</th>
+                        <th>Service</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
     </div>
     <div id="detailOverlay">
         <div id="detailModal">
@@ -1289,16 +1273,9 @@
             }, 150));
 
 
-            document.querySelectorAll('#filterLevel button').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('#filterLevel button').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    clearCardFilter();
-                    applyFilters();
-                });
-            });
 
-            document.getElementById('btnExport').addEventListener('click', exportCSV);
+
+
             document.getElementById('btnReset').addEventListener('click', resetFilters);
             document.getElementById('btnShowAll').addEventListener('click', () => {
                 clearCardFilter();
@@ -1632,8 +1609,7 @@
             let search = document.getElementById('filterSearch').value.toLowerCase();
 
 
-            const activeLevelBtn = document.querySelector('#filterLevel button.active');
-            const level = activeLevelBtn ? activeLevelBtn.dataset.val : '';
+
 
 
             if (activeCardFilter) {
@@ -1653,7 +1629,7 @@
                 if (region && r.region !== region) return false;
                 if (service && r.service !== service) return false;
                 if (delta && r.delta !== delta) return false;
-                if (level && (!r.profile || !r.profile.toLowerCase().includes(level.toLowerCase()))) return false;
+
                 if (search) {
                     const hay = [
                         r.id, r.title, r.resource, r.resourceName, r.statusExt,
@@ -1699,9 +1675,7 @@
                     r.delta === 'new-fail' ? '<span class="badge-sm new">NEW</span>' : '';
                 let metaBadges = '';
                 if (r.profile) {
-                    const p = r.profile.toLowerCase();
-                    if (p.includes('level 1')) metaBadges += '<span class="badge l1" title="CIS Benchmark Level 1 Profile">L1</span>';
-                    if (p.includes('level 2')) metaBadges += '<span class="badge l2" title="CIS Benchmark Level 2 Profile (Defense in Depth)">L2</span>';
+
                 }
                 if (r.mitre && r.mitre.length) {
                     metaBadges += '<div class="meta-badges">';
@@ -1803,123 +1777,11 @@
             return s.length > n ? s.slice(0, n) + '...' : s;
         }
 
-        function exportCSV() {
-            if (!filtered || !filtered.length) {
-                alert('No data to export');
-                return;
-            }
-
-
-            const cols = ['id', 'title', 'status', 'severity', 'acctId', 'region', 'service', 'resource', 'profile', 'mitre'];
-
-
-            let csv = cols.join(',') + '\\n';
-
-
-            filtered.forEach(r => {
-                const row = cols.map(c => {
-                    let val = r[c] || '';
-                    if (Array.isArray(val)) val = val.join(' ');
-
-                    val = String(val).replace(/"/g, '""');
-                    return `"${val}"`;
-                });
-                csv += row.join(',') + '\\n';
-            });
-
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'prowldash_export.csv');
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        async function exportPDF() {
-            if (!window.jspdf || !window.html2canvas) {
-                alert('PDF libraries not loaded. Please ensure internet access for PDF export.');
-                return;
-            }
-
-            const btn = document.getElementById('btnExportPDF');
-            const originalText = btn.textContent;
-            btn.textContent = 'Generating...';
-            btn.disabled = true;
-
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const pageHeight = doc.internal.pageSize.getHeight();
-
-
-                const addElement = async (selector, yOffset) => {
-                    const el = document.querySelector(selector);
-                    if (!el) return yOffset;
-
-                    const canvas = await html2canvas(el, { scale: 1.5, useCORS: true, logging: false });
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = pageWidth - 20;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-
-                    if (yOffset + imgHeight > pageHeight - 10) {
-                        doc.addPage();
-                        yOffset = 10;
-                    }
-
-                    doc.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
-                    return yOffset + imgHeight + 10;
-                };
-
-                let y = 10;
-
-                doc.setFontSize(18);
-                doc.text("ProwlDash Compliance Report", 10, y);
-                y += 10;
-                doc.setFontSize(10);
-                doc.text(`Generated: ${new Date().toLocaleString()}`, 10, y);
-                y += 10;
-
-
-                y = await addElement('.summary-grid', y);
-
-
-                y = await addElement('#chartsRow', y);
-
-
-                if (y > pageHeight - 30) {
-                    doc.addPage();
-                    y = 10;
-                }
-                doc.setFontSize(12);
-                doc.text("Detailed Findings", 10, y);
-                y += 10;
-                doc.setFontSize(10);
-                doc.text("Please refer to the interactive dashboard or CSV export for full findings list.", 10, y);
-
-                doc.save('prowldash_report.pdf');
-            } catch (err) {
-                console.error(err);
-                alert('Failed to generate PDF: ' + err.message);
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
-        }
-
-
-        document.getElementById('btnExportPDF').addEventListener('click', exportPDF);
 
         init();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
 </body>
 
 </html>
