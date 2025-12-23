@@ -26,7 +26,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict, Counter
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 # Optional Pandas for faster CSV parsing (5-10x speedup for large files)
 try:
@@ -297,11 +297,11 @@ def parse_csv(filepath: str) -> list[dict]:
             return df.to_dict('records')
         except MemoryError:
             print(f"  ⚠️  Memory error parsing {os.path.basename(filepath)} - file too large")
-            print(f"      Consider splitting the file or increasing system memory")
+            print("      Consider splitting the file or increasing system memory")
             raise
         except Exception as e:
             print(f"  ⚠️  Pandas parsing failed for {os.path.basename(filepath)}: {e}")
-            print(f"      Falling back to standard CSV parser...")
+            print("      Falling back to standard CSV parser...")
     
     # stdlib csv: faster for typical Prowler files, PyPy-optimized
     rows = []
