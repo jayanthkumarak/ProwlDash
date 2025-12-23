@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.6.1] - 2025-12-23
+
+### Added
+- **New Terminal UI**: Added a "Modern Slant" ASCII art banner and colorized output for a professional look.
+- **Improved UX**: Clearer descriptive text relative to the tool's purpose and version.
+
 ## [4.6.0] - 2025-12-23
 
 ### Added

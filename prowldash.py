@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prowler Dashboard Generator V4.6
+Prowler Dashboard Generator V4.6.1
 
 Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
@@ -36,6 +36,8 @@ except ImportError:
     USE_PANDAS = False
     pd = None
 
+
+VERSION = "4.6.1"
 
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here
@@ -768,7 +770,7 @@ def show_help():
     """Display comprehensive help information."""
     help_text = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V4.6                          ║
+║                    PROWLER DASHBOARD GENERATOR V4.6.1                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION
@@ -854,7 +856,7 @@ def list_frameworks():
 
 def show_version():
     """Display version information."""
-    print("ProwlDash V4.6.0")
+    print(f"ProwlDash V{VERSION}")
     perf_mode = "Pandas + Parallel" if USE_PANDAS else "Parallel (pip install pandas for faster parsing)"
     print(f"Performance: {perf_mode}")
     print(f"Supports {len(FRAMEWORK_REGISTRY)}+ compliance frameworks")
@@ -1101,6 +1103,7 @@ def parse_args(argv: list) -> dict:
 
 
 def main():
+    print_banner()
     # Handle help and version flags
     if len(sys.argv) < 2 or any(arg in sys.argv for arg in ['--help', '-h']):
         show_help()
@@ -1298,6 +1301,28 @@ def main():
     if generated:
         print(f"  {output_dir / 'index.html'}")
     print(f"\nOpen {output_dir / 'index.html'} in any browser.")
+
+
+def print_banner():
+    """Print the ProwlDash ASCII banner with colors."""
+    # ANSI Color Codes
+    CYAN = "\033[96m"
+    BLUE = "\033[94m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    RESET = "\033[0m"
+
+    banner = r"""
+    ____                       __    ____            __  
+   / __ \_________ _      __  / /   / __ \____ _____/ /_ 
+  / /_/ / ___/ __ \ | /| / / / /   / / / / __ `/ ___/ __ \
+ / ____/ /  / /_/ / |/ |/ / / /___/ /_/ / /_/ (__  ) / / /
+/_/   /_/   \____/|__/|__/ /_____/_____/\__,_/____/_/ /_/ 
+"""
+    
+    print(f"{BOLD}{CYAN}{banner}{RESET}")
+    print(f"{DIM}Interactive Security Compliance Dashboard Generator v{VERSION}{RESET}")
+    print(f"{DIM}------------------------------------------------------------{RESET}")
 
 
 if __name__ == "__main__":
