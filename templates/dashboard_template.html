@@ -41,7 +41,12 @@
             --severity-medium: #F0E442;
             /* Yellow */
             --severity-low: #0072B2;
+            --severity-low: #0072B2;
             /* Blue */
+
+            /* Branding Tokens */
+            --brand-primary: var(--accent-blue);
+            --brand-secondary: var(--accent-purple);
         }
 
         [data-theme="light"] {
@@ -72,6 +77,10 @@
             --severity-medium: #B8860B;
             /* Darker for light bg */
             --severity-low: #0072B2;
+
+            /* Branding Tokens */
+            --brand-primary: var(--accent-blue);
+            --brand-secondary: var(--accent-purple);
         }
 
         * {
@@ -618,7 +627,7 @@
         }
 
         .filter-toggle button.active {
-            background: var(--accent-blue);
+            background: var(--brand-primary);
             color: #fff;
         }
 
@@ -1172,7 +1181,9 @@
                 <input type="text" id="filterSearch" placeholder="ID, resource...">
             </div>
             <button class="btn-reset" id="btnExport"
-                style="background:var(--accent-blue);color:#fff;border-color:var(--accent-blue)">Export CSV</button>
+                style="background:var(--brand-primary);color:#fff;border-color:var(--brand-primary)">CSV</button>
+            <button class="btn-reset" id="btnExportPDF"
+                style="background:var(--brand-secondary);color:#fff;border-color:var(--brand-secondary)">PDF</button>
             <button class="btn-reset" id="btnReset">Reset</button>
         </div>
         <div class="table-section">
@@ -1805,6 +1816,82 @@
             a.click();
             document.body.removeChild(a);
         }
+
+        async function exportPDF() {
+            if (!window.jspdf || !window.html2canvas) {
+                alert('PDF libraries not loaded. Please ensure internet access for PDF export.');
+                return;
+            }
+
+            const btn = document.getElementById('btnExportPDF');
+            const originalText = btn.textContent;
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+
+                // Helper to add element to PDF
+                const addElement = async (selector, yOffset) => {
+                    const el = document.querySelector(selector);
+                    if (!el) return yOffset;
+
+                    const canvas = await html2canvas(el, { scale: 1.5, useCORS: true, logging: false });
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = pageWidth - 20; // 10mm margins
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    // Check if new page needed
+                    if (yOffset + imgHeight > pageHeight - 10) {
+                        doc.addPage();
+                        yOffset = 10;
+                    }
+
+                    doc.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
+                    return yOffset + imgHeight + 10;
+                };
+
+                let y = 10;
+                // Add Header (custom text instead of screenshot to save space)
+                doc.setFontSize(18);
+                doc.text("ProwlDash Compliance Report", 10, y);
+                y += 10;
+                doc.setFontSize(10);
+                doc.text(`Generated: ${new Date().toLocaleString()}`, 10, y);
+                y += 10;
+
+                // Capture Summary Cards
+                y = await addElement('.summary-grid', y);
+
+                // Capture Charts
+                y = await addElement('#chartsRow', y);
+
+                // Add note about full data
+                if (y > pageHeight - 30) {
+                    doc.addPage();
+                    y = 10;
+                }
+                doc.setFontSize(12);
+                doc.text("Detailed Findings", 10, y);
+                y += 10;
+                doc.setFontSize(10);
+                doc.text("Please refer to the interactive dashboard or CSV export for full findings list.", 10, y);
+
+                doc.save('prowldash_report.pdf');
+            } catch (err) {
+                console.error(err);
+                alert('Failed to generate PDF: ' + err.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Add listener
+        document.getElementById('btnExportPDF').addEventListener('click', exportPDF);
 
         init();
     </script>
