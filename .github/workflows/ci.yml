@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Lint with Ruff
+        run: ruff check prowldash.py
+
+      - name: Smoke test - help
+        run: python3 prowldash.py --help
+
+      - name: Smoke test - version
+        run: python3 prowldash.py --version
+
+      - name: Smoke test - list frameworks
+        run: python3 prowldash.py --list-frameworks

@@ -23,7 +23,6 @@ import csv
 import json
 import sys
 import os
-import re
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict, Counter
@@ -360,8 +359,6 @@ def detect_primary_framework(rows: list[dict], filepath: str = "", user_framewor
     # Try filename detection FIRST - most reliable indicator
     # Filename typically contains the primary framework (e.g., fsbp_report.csv, cis_scan.csv)
     if filepath:
-        filename_fw = detect_framework_from_filename(filepath)
-        # Only use filename detection if it found a specific framework (not default 'cis')
         name = os.path.basename(filepath).lower()
         # Check if filename explicitly mentions a framework
         for fw_id, fw_info in FRAMEWORK_REGISTRY.items():
@@ -439,7 +436,7 @@ def get_scan_date(rows: list[dict]) -> str:
             # Handle various date formats
             dt = datetime.fromisoformat(date_str.split(".")[0].replace("Z", ""))
             return dt.strftime("%b %d, %Y")
-        except:
+        except ValueError:
             pass
     return "Unknown"
 

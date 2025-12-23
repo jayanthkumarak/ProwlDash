@@ -105,7 +105,7 @@ Interactive HTML documentation is available at `docs/index.html`.
 
 ## License
 
-MIT
+Apache-2.0
 
 ## See Also
 
