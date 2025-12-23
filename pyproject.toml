@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "prowldash"
-version = "5.0.1"
+version = "5.0.2"
 description = "Generate interactive HTML compliance dashboards from Prowler security scans"
 readme = "README.md"
 license = "Apache-2.0"
