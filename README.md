@@ -1,5 +1,10 @@
 # ProwlDash
 
+[![Version](https://img.shields.io/badge/version-4.6.0-brightgreen.svg)](CHANGELOG.md)
+[![CI](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/)
+
 ProwlDash converts [Prowler](https://github.com/prowler-cloud/prowler) CSV reports into interactive, self-contained HTML dashboards. It enables security teams to distribute compliance findings to stakeholders who lack access to the AWS console or Prowler's raw output.
 
 The tool runs entirely offline, requires no infrastructure, and scales to handle data from hundreds of AWS accounts.
