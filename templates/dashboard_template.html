@@ -1124,9 +1124,7 @@
             <span id="themeLabel">Light</span>
         </button>
     </div>
-    <span id="themeLabel">Light</span>
-    </button>
-    </div>
+
     <div class="tab-bar hidden" id="tabBar" role="tablist" aria-label="Account Tabs">
         <!-- Tabs will be dynamically generated -->
     </div>
@@ -1184,36 +1182,34 @@
                     <option value="">All Services</option>
                 </select>
             </div>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="filterSearch">Search</label>
-            <input type="text" id="filterSearch" placeholder="ID, resource...">
-        </div>
+            <div class="filter-group">
+                <label for="filterSearch">Search</label>
+                <input type="text" id="filterSearch" placeholder="ID, resource...">
+            </div>
 
-        <button class="btn-reset" id="btnReset">Reset Filters</button>
-    </div>
-    <div class="table-section">
-        <div class="table-header">
-            <h2>Security Controls</h2>
-            <span class="result-info" id="resultInfo"></span>
+            <button class="btn-reset" id="btnReset">Reset Filters</button>
         </div>
-        <div class="table-scroll">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Check ID</th>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Severity</th>
-                        <th>Account</th>
-                        <th>Service</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+        <div class="table-section">
+            <div class="table-header">
+                <h2>Security Controls</h2>
+                <span class="result-info" id="resultInfo"></span>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Check ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Severity</th>
+                            <th>Account</th>
+                            <th>Service</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
-    </div>
     </div>
     <div id="detailOverlay">
         <div id="detailModal">
@@ -1427,7 +1423,7 @@
             document.getElementById('btnShowAll').classList.remove('hidden');
 
 
-            ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService', 'filterDelta'].forEach(id => {
+            ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService'].forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('filterSearch').value = '';
@@ -1605,7 +1601,6 @@
             let severity = document.getElementById('filterSeverity').value;
             let region = document.getElementById('filterRegion').value;
             let service = document.getElementById('filterService').value;
-            let delta = document.getElementById('filterDelta').value;
             let search = document.getElementById('filterSearch').value.toLowerCase();
 
 
@@ -1618,7 +1613,6 @@
                     severity = activeCardFilter.value;
                     status = 'FAIL';
                 }
-                if (activeCardFilter.type === 'delta') delta = activeCardFilter.value;
             }
 
 
@@ -1628,7 +1622,6 @@
                 if (severity && r.severity !== severity) return false;
                 if (region && r.region !== region) return false;
                 if (service && r.service !== service) return false;
-                if (delta && r.delta !== delta) return false;
 
                 if (search) {
                     const hay = [
@@ -1647,7 +1640,7 @@
 
         function resetFilters() {
             clearCardFilter();
-            ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService', 'filterDelta'].forEach(id => {
+            ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService'].forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('filterSearch').value = '';

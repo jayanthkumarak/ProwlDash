@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.1] - 2025-12-23
+### Fixed
+- **Critical**: Fixed Dashboard rendering crash caused by regression in V5.1.0 where removed HTML elements (`filterDelta`) were still referenced in JavaScript.
+- **UI**: Fixed broken header layout showing visible "Light" theme text.
+
 ## [5.1.0] - 2025-12-23
 ### Removed
 - **Export Functionality**: Removed Client-side PDF and CSV export buttons and dependencies (`html2canvas`, `jsPDF`) to simplify logic and reduce external requests.
