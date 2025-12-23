@@ -1653,7 +1653,7 @@
                 if (region && r.region !== region) return false;
                 if (service && r.service !== service) return false;
                 if (delta && r.delta !== delta) return false;
-                if (level && (!r.profile || !r.profile.includes(level))) return false;
+                if (level && (!r.profile || !r.profile.toLowerCase().includes(level.toLowerCase()))) return false;
                 if (search) {
                     const hay = [
                         r.id, r.title, r.resource, r.resourceName, r.statusExt,
@@ -1700,8 +1700,8 @@
                 let metaBadges = '';
                 if (r.profile) {
                     const p = r.profile.toLowerCase();
-                    if (p.includes('level 1')) metaBadges += '<span class="badge l1">L1</span>';
-                    if (p.includes('level 2')) metaBadges += '<span class="badge l2">L2</span>';
+                    if (p.includes('level 1')) metaBadges += '<span class="badge l1" title="CIS Benchmark Level 1 Profile">L1</span>';
+                    if (p.includes('level 2')) metaBadges += '<span class="badge l2" title="CIS Benchmark Level 2 Profile (Defense in Depth)">L2</span>';
                 }
                 if (r.mitre && r.mitre.length) {
                     metaBadges += '<div class="meta-badges">';
