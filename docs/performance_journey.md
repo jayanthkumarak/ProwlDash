@@ -52,3 +52,16 @@ This hybrid approach optimizes for the 90th percentile case (small/medium files)
 
 *   **Apple Silicon (ARM64)**: Shows efficient process forking and low overhead. Speedup is near-instant for batch sizes < Core Count.
 *   **PyPy**: The codebase remains pure Python. Running with PyPy JIT yields an additional ~2x speedup on top of the architectural changes for the `stdlib` parsing path.
+
+## 4. V4.6 Updates (December 2025)
+
+V4.6 focused on stability, security, and refined performance scaling.
+
+### Security
+We implemented rigorous XSS prevention mechanism (`safe_json_dumps`) that sanitizes JSON data embedded in the HTML. This protects against injection attacks from malicious CSV content by escaping characters like `<`, `>`, and `/`.
+
+### Adaptive Performance
+A new adaptive parallelism model bounds the worker count to `min(cpu_count, file_count)`. This prevents the overhead of spinning up 14+ processes when processing just 1 or 2 files, effectively balancing startup cost vs. parallel throughput.
+
+**Benchmark Results:**
+With the new chunked reading optimization for large files and adaptive workers, ProwlDash achieves **~28,000 rows/second** throughput on standard hardware, with significantly reduced peak memory pressure.
