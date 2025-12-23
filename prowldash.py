@@ -336,7 +336,10 @@ def detect_format(rows: list[dict]) -> str:
         return "main"
     if "REQUIREMENTS_ATTRIBUTES_PROFILE" in rows[0]:
         return "compliance"
-    if "REQUIREMENTS_ID" in rows[0]:
+    # Detect format
+    row_0 = rows[0]
+    keys = list(row_0.keys())
+    if "REQUIREMENTS_ID" in keys:
         return "compliance"
     return "main"
 
@@ -461,11 +464,17 @@ def extract_mitre_techniques(compliance_str: str) -> list[str]:
         part = part.strip()
         # Look for MITRE pattern variants
         if "MITRE" in part.upper() and ":" in part:
-            # Format: "MITRE-ATTACK: T1552"
-            val = part.split(":")[1].strip()
-            # Basic validation for T-code format (Txxxx)
-            if val.startswith("T") and len(val) >= 5:
-                techniques.append(val)
+            # Format: "MITRE-ATTACK: T1552, T1059.001"
+            val_str = part.split(":")[1].strip()
+            # Split by comma to handle multiple techniques
+            candidates = [t.strip() for t in val_str.split(',')]
+            
+            for val in candidates:
+                # Basic validation for T-code format (Txxxx)
+                # Remove version if present for validation check, but keep for result? 
+                # Actually earlier I saw T1059.001 is valid.
+                if val.startswith("T") and len(val) >= 5:
+                    techniques.append(val)
     return techniques
 
 
@@ -555,9 +564,11 @@ def normalize_row(row: dict, csv_format: str) -> dict:
             "risk": "",
             "remediation": row.get("REQUIREMENTS_ATTRIBUTES_REMEDIATIONPROCEDURE", ""),
             "remediationUrl": "",
-
+            
             "compliance": row.get("FRAMEWORK", ""),
-            "mitre": list(set(extract_mitre_techniques(row.get("FRAMEWORK", "")) + extract_mitre_techniques(row.get("REQUIREMENTS_ATTRIBUTES_SECTION", "")))),
+            "mitre": list(set(extract_mitre_techniques(row.get("FRAMEWORK", "")) + 
+                            extract_mitre_techniques(row.get("REQUIREMENTS_ATTRIBUTES_SECTION", "")) + 
+                            extract_mitre_techniques(row.get("COMPLIANCE", "")))),
             "profile": row.get("REQUIREMENTS_ATTRIBUTES_PROFILE", ""),
             "section": row.get("REQUIREMENTS_ATTRIBUTES_SECTION", ""),
             "rationale": row.get("REQUIREMENTS_ATTRIBUTES_RATIONALESTATEMENT", ""),

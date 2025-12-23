@@ -164,3 +164,8 @@ class TestMetadataExtraction(unittest.TestCase):
         self.assertEqual(extract_mitre_techniques(""), [])
         self.assertEqual(extract_mitre_techniques(None), [])
         self.assertEqual(extract_mitre_techniques("CIS-2.0: 1.4"), [])
+
+    def test_extract_mitre_techniques_comma(self):
+        """Test comma-separated IDs in single block."""
+        s = "MITRE-ATTACK: T1552, T1059.001 | CIS-2.0: 1.4"
+        self.assertEqual(set(extract_mitre_techniques(s)), {"T1552", "T1059.001"})
