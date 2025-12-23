@@ -19,8 +19,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Ruff
-        run: pip install ruff
+      - name: Install dependencies
+        run: |
+          pip install ruff pytest pytest-cov pandas
 
       - name: Lint with Ruff
         run: ruff check prowldash.py
@@ -34,10 +35,9 @@ jobs:
       - name: Smoke test - list frameworks
         run: python3 prowldash.py --list-frameworks
 
-      - name: Run Tests
+      - name: Run Tests with Coverage
         run: |
-          python3 tests/test_core.py
-          python3 tests/test_integration.py
+          pytest --cov=prowldash --cov-report=term-missing tests/
 
       - name: Benchmark
         run: python3 tools/benchmark.py --files 4 --rows 1000

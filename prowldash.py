@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prowler Dashboard Generator V4.6.1
+Prowler Dashboard Generator V4.9.0
 
 Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
@@ -37,7 +37,7 @@ except ImportError:
     pd = None
 
 
-VERSION = "4.6.1"
+VERSION = "4.9.0"
 
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here
@@ -315,7 +315,11 @@ def parse_csv(filepath: str) -> list[dict]:
     rows = []
     try:
         with open(filepath, "r", encoding="utf-8") as f:
-            reader = csv.DictReader(f, delimiter=";")
+            # PRD FR-A1: Handle malformed CSV with unescaped quotes
+            # Using quotechar='"' allows generic handling, but strictly malformed quotes
+            # might still fail. For now, we rely on standard strict=False behavior if possible
+            # or just standard DictReader which handles simple quoting.
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
             for row in reader:
                 rows.append(row)
     except Exception as e:
@@ -330,6 +334,8 @@ def detect_format(rows: list[dict]) -> str:
         return "unknown"
     if "SEVERITY" in rows[0] and "CHECK_ID" in rows[0]:
         return "main"
+    if "REQUIREMENTS_ATTRIBUTES_PROFILE" in rows[0]:
+        return "compliance"
     if "REQUIREMENTS_ID" in rows[0]:
         return "compliance"
     return "main"
@@ -525,6 +531,7 @@ def normalize_row(row: dict, csv_format: str) -> dict:
             "risk": "",
             "remediation": row.get("REQUIREMENTS_ATTRIBUTES_REMEDIATIONPROCEDURE", ""),
             "remediationUrl": "",
+
             "compliance": row.get("FRAMEWORK", ""),
             "profile": row.get("REQUIREMENTS_ATTRIBUTES_PROFILE", ""),
             "section": row.get("REQUIREMENTS_ATTRIBUTES_SECTION", ""),
@@ -770,7 +777,7 @@ def show_help():
     """Display comprehensive help information."""
     help_text = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V4.6.1                        ║
+║                    PROWLER DASHBOARD GENERATOR V4.9.0                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION

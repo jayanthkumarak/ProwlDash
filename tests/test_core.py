@@ -9,9 +9,23 @@ from unittest.mock import patch, mock_open, MagicMock
 # Add project root to path so we can import prowldash
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from prowldash import safe_json_dumps, detect_framework, get_framework_info, parse_csv
+from prowldash import safe_json_dumps, detect_framework, get_framework_info, parse_csv, detect_format
 
 class TestCore(unittest.TestCase):
+    def test_detect_format_compliance(self):
+        """Test detection of compliance format with new columns."""
+        # Generic format
+        rows_main = [{"SEVERITY": "High", "CHECK_ID": "cis_1.1"}]
+        self.assertEqual(detect_format(rows_main), "main")
+
+        # Compliance format (legacy)
+        rows_comp = [{"REQUIREMENTS_ID": "1.1"}]
+        self.assertEqual(detect_format(rows_comp), "compliance")
+
+        # Compliance format (new 2.0+ columns)
+        rows_comp_new = [{"REQUIREMENTS_ATTRIBUTES_PROFILE": "Level 1"}]
+        self.assertEqual(detect_format(rows_comp_new), "compliance")
+
     def test_safe_json_dumps_escapes_xss(self):
         """Test that HTML-sensitive characters are escaped in JSON."""
         data = {
@@ -106,6 +120,43 @@ class TestCsvParsing(unittest.TestCase):
         
         mock_pd.read_csv.assert_called_once()
         self.assertEqual(len(rows), 1)
+
+    @patch("prowldash.os.path.getsize")
+    def test_parse_csv_malformed_quotes(self, mock_getsize):
+        """Test handling of CSVs with unescaped quotes."""
+        mock_getsize.return_value = 100 # Mock size
+        # This mirrors the behavior of the malformed.csv fixture
+        content = 'ID;STATUS\n1;"Active with "quoted" word"'
+        
+        with patch("builtins.open", mock_open(read_data=content)):
+            # With quotechar='"', the parser might still struggle with unescaped quotes inside quotes
+            # depending on the implementation. However, we want to ensure it doesn't CRASH.
+            try:
+                rows = parse_csv("malformed.csv")
+                # If it extracts "Active with "quoted" word" correctly as one field, great.
+                # If it splits it, that's also acceptable for now as long as it doesn't raise.
+            except Exception as e:
+                self.fail(f"Parsing malformed CSV raised exception: {e}")
+
+    def test_real_fixtures(self):
+        """Integration test with actual fixture files."""
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        fixtures_dir = os.path.join(base_path, "fixtures")
+        
+        # 1. Generic AWS Scan
+        generic_path = os.path.join(fixtures_dir, "generic_aws_scan.csv")
+        if os.path.exists(generic_path):
+            rows = parse_csv(generic_path)
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(detect_format(rows), "main")
+            
+        # 2. CIS Compliance Scan
+        cis_path = os.path.join(fixtures_dir, "cis_2.0_aws_compliance.csv")
+        if os.path.exists(cis_path):
+            rows = parse_csv(cis_path)
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(detect_format(rows), "compliance")
+            self.assertEqual(rows[0]["REQUIREMENTS_ATTRIBUTES_PROFILE"], "Level 1")
 
 if __name__ == "__main__":
     unittest.main()

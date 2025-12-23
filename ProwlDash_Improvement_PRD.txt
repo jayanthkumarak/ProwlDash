@@ -1,0 +1,210 @@
+Product Requirements Document
+ProwlDash Enhancement Initiative
+Testing, Interactive Features & Prowler Compliance Metadata Integration
+Document Version
+1.0
+Date
+December 23, 2025
+Author
+Jayanth Kumar
+Project
+ProwlDash v5.0 Enhancement
+Repository
+github.com/jayanthkumarak/ProwlDash
+
+Executive Summary
+This PRD outlines critical enhancements to ProwlDash that will transform it from a static visualization tool into an enterprise-grade, interactive compliance reporting platform. Based on extensive research into the Prowler open-source security tool's capabilities, we have identified significant untapped metadata that ProwlDash currently does not surface, limiting its value for security teams making risk-based decisions.
+Key Discovery: Prowler's compliance-specific CSV outputs (generated via --compliance flag) contain rich metadata including CIS Profile Levels (Level 1 vs Level 2), MITRE ATT&CK mappings, ThreatScore weights, and multi-framework requirement mappings. The current ProwlDash implementation only parses the generic output format, missing this critical compliance context.
+Strategic Goals
+	•	Prowler Parity: Surface all Prowler metadata including CIS Levels, MITRE ATT&CK techniques, and ThreatScore in HTML dashboards
+	•	Enterprise Readiness: Achieve >80% test coverage with CI/CD integration for enterprise adoption confidence
+	•	Interactive Reporting: Enable real-time filtering, search, and export capabilities for stakeholder consumption
+	•	Maturity Visualization: Differentiate organizational security maturity by displaying CIS Level 1 (baseline) vs Level 2 (advanced) compliance separately
+
+Research Findings: Prowler Metadata Deep Dive
+Analysis of the Prowler repository (prowler-cloud/prowler) reveals two distinct output modes that ProwlDash must handle:
+1. Generic CSV Output (Current ProwlDash Focus)
+Generated in /output/ directory. Contains standard columns such as ACCOUNT_UID, CHECK_ID, CHECK_TITLE, STATUS, SEVERITY, RESOURCE_UID, and a combined COMPLIANCE field showing all mapped frameworks in a pipe-delimited format (e.g., "MITRE-ATTACK: T1552 | CIS-2.0: 1.4").
+2. Compliance-Specific CSV Output (Untapped by ProwlDash)
+Generated in /output/compliance/ directory when using prowler aws --compliance cis_2.0_aws. Contains framework-specific columns:
+Compliance-Specific CSV Fields:
+Field Name
+Description & Significance
+REQUIREMENTS_ATTRIBUTES_PROFILE
+CIS Level designation ("Level 1" or "Level 2"). Level 1 = baseline controls for all organizations. Level 2 = advanced controls for high-security environments. Critical for maturity assessment.
+REQUIREMENTS_ID
+Specific control ID (e.g., "1.4", "2.1.1") enabling drill-down to framework documentation
+REQUIREMENTS_DESCRIPTION
+Full control description text for inline display without external lookup
+REQUIREMENTS_ATTRIBUTES_SECTION
+Control category grouping (e.g., "Identity and Access Management", "Logging") for hierarchical reporting
+3. Additional Prowler Metadata Currently Unused
+	•	ThreatScore: Weighted risk prioritization score (new in Prowler 5.x) for focusing remediation efforts on highest-impact findings
+	•	MITRE ATT&CK Mappings: Technique IDs (e.g., T1552 - Unsecured Credentials) present in the COMPLIANCE field enabling threat-informed prioritization
+	•	Remediation Code Snippets: REMEDIATION_CODE_CLI, REMEDIATION_CODE_TERRAFORM, REMEDIATION_CODE_NATIVEIAC columns with actionable fix commands
+	•	Multi-Framework Mappings: A single check can map to multiple frameworks (CIS, NIST, PCI-DSS, HIPAA, SOC2) - currently displayed as a raw pipe-delimited string
+
+Feature A: Testing & CI Enhancement
+Problem Statement
+Enterprise security teams require confidence that ProwlDash correctly parses all Prowler output variations. The current test suite has limited coverage around edge cases in CSV parsing, framework detection logic, and multi-account aggregation. Without comprehensive testing, organizations cannot trust ProwlDash for compliance reporting in audit scenarios.
+Requirements
+FR-A1: CSV Parsing Edge Case Coverage
+	•	Handle malformed CSV with unescaped quotes in STATUS_EXTENDED field (common in Prowler descriptions)
+	•	Support mixed encoding scenarios (UTF-8 with BOM, Latin-1 resource names from international AWS accounts)
+	•	Parse multi-line cell values in REMEDIATION_RECOMMENDATION_TEXT without row corruption
+	•	Handle empty or null columns gracefully (some checks have no RESOURCE_TAGS)
+	•	Parse the COMPLIANCE field with varying delimiter patterns across Prowler versions
+FR-A2: Framework Detection Logic Testing
+	•	Detect CIS AWS Foundations Benchmark versions 1.4, 1.5, 2.0, 3.0, and 5.0 from filename patterns and CSV headers
+	•	Identify compliance-specific vs generic output format and route to appropriate parser
+	•	Handle multi-provider scenarios (AWS + Azure + GCP in single aggregation)
+	•	Validate correct extraction of REQUIREMENTS_ATTRIBUTES_PROFILE (CIS Level 1/2) from compliance outputs
+FR-A3: Integration Tests with Sample Prowler Exports
+	•	Test Fixtures Required:
+	•	Generic AWS scan output (~500 findings) with all severity levels
+	•	CIS 2.0 compliance-specific output with Level 1 and Level 2 controls
+	•	Multi-account aggregation (3+ accounts with overlapping and unique findings)
+	•	Remediation tracking scenario (baseline.csv + latest.csv for delta detection)
+	•	Azure and GCP provider outputs for cross-cloud validation
+FR-A4: CI Pipeline Enhancement
+	•	Target 80% code coverage minimum for core parsing modules
+	•	Add coverage reporting to GitHub Actions workflow with badge generation
+	•	Implement mutation testing for parser validation (e.g., mutmut or cosmic-ray)
+	•	Add performance regression tests for large file handling (>100MB CSVs)
+
+Feature B: Interactive Dashboard Features
+Problem Statement
+The current HTML dashboard is static, requiring stakeholders to manually search through findings. Security teams waste time scrolling through 500+ findings when they need to focus on specific resources, severity levels, or CIS profile levels. Additionally, there is no way to export filtered views for executive reporting or share themed reports that match corporate branding requirements.
+Requirements
+FR-B1: Filter and Search UI
+	•	Multi-Select Filters: Dropdown filters for SEVERITY (Critical, High, Medium, Low, Informational), STATUS (PASS, FAIL, MANUAL), SERVICE_NAME, REGION
+	•	CIS Level Filter: Toggle between "Level 1 Only", "Level 2 Only", or "All" to segment findings by organizational maturity target (NEW - requires compliance CSV parsing)
+	•	Full-Text Search: Search across CHECK_TITLE, STATUS_EXTENDED, RESOURCE_UID, RESOURCE_NAME with real-time filtering
+	•	MITRE ATT&CK Filter: Filter by ATT&CK Technique ID (parsed from COMPLIANCE field) for threat-informed remediation
+	•	Account/Region Grouping: Collapsible tree view by ACCOUNT_UID > REGION > SERVICE_NAME
+FR-B2: Export Capabilities
+	•	PDF Export: Generate PDF report of current filtered view using browser print-to-PDF or client-side library (jsPDF)
+	•	CSV Export: Download filtered findings as CSV for further analysis in Excel/Sheets
+	•	Executive Summary Export: One-page PDF with compliance percentage by framework, severity distribution chart, and top 10 critical findings
+	•	Remediation Runbook Export: Export filtered FAIL findings with REMEDIATION_CODE_CLI commands as executable script or markdown document
+FR-B3: Corporate Theming Support
+	•	Custom CSS Variables: Allow injection of --primary-color, --accent-color, --background-color, --font-family via config file or CLI flag
+	•	Logo Placement: Support company logo in header via base64-embedded image or external URL
+	•	Dark/Light Mode: Toggle between dark and light themes with preference persistence via localStorage
+	•	Report Title Customization: Override default "ProwlDash Security Report" with custom title for client deliverables
+
+Feature C: Prowler Compliance Metadata Integration
+Problem Statement
+The CIS AWS Foundations Benchmark distinguishes between Level 1 (baseline security for all organizations) and Level 2 (advanced security for sensitive environments). Currently, ProwlDash treats all findings equally, preventing security teams from making maturity-appropriate recommendations. A startup may only need Level 1 compliance, while a financial services organization must achieve both levels. This nuance is present in Prowler's compliance output but completely absent from ProwlDash visualization.
+CIS Level 1 vs Level 2 Context
+Level
+Target Audience
+Example Controls
+Level 1
+All organizations, minimal operational impact, essential baseline
+Avoid root account access keys, Enable CloudTrail in all regions, Enable MFA for root account
+Level 2
+High-security environments, regulated industries, defense-in-depth
+Hardware MFA for root, VPC Flow Logs for all VPCs, S3 bucket versioning with MFA delete
+Requirements
+FR-C1: Dual CSV Format Detection
+	•	Detect if input CSV is from /output/ (generic) or /output/compliance/ (framework-specific)
+	•	Parse REQUIREMENTS_ATTRIBUTES_PROFILE column when present
+	•	Fall back gracefully when compliance-specific columns are absent
+FR-C2: CIS Level Visualization
+	•	Visual Badge: Display "L1" (green) or "L2" (amber) badge next to each finding in the dashboard
+	•	Summary Statistics: Show compliance percentage split: "Level 1: 94% (47/50 passed) | Level 2: 78% (32/41 passed)"
+	•	Maturity Roadmap View: Collapsible sections showing "Achieve Level 1 First" (all L1 failures) and "Then Level 2" (L2 failures)
+FR-C3: MITRE ATT&CK Integration
+	•	Parse MITRE technique IDs from the COMPLIANCE field (e.g., "MITRE-ATTACK: T1552")
+	•	Display clickable technique badge linking to attack.mitre.org
+	•	Group findings by ATT&CK Tactic (Credential Access, Defense Evasion, etc.)
+FR-C4: Remediation Code Display
+	•	Show expandable code blocks for REMEDIATION_CODE_CLI, REMEDIATION_CODE_TERRAFORM
+	•	Add "Copy to Clipboard" functionality for quick remediation execution
+	•	Syntax highlighting for CLI (bash) and Terraform (HCL) code blocks
+
+Technical Implementation Guide
+Parsing Strategy for Compliance CSV
+The compliance-specific CSV has different column headers than the generic output. Implementation should:
+	•	Check for REQUIREMENTS_ATTRIBUTES_PROFILE column presence in CSV header row
+	•	Extract CIS Level from REQUIREMENTS_ATTRIBUTES_PROFILE (values: "Level 1", "Level 2", or empty)
+	•	Parse REQUIREMENTS_ID for control number (e.g., "1.4", "2.1.1")
+	•	Join compliance findings with generic findings on CHECK_ID + RESOURCE_UID for complete view
+Recommended Test Fixtures Structure
+Create tests/fixtures/ directory with sanitized real-world Prowler outputs:
+	•	generic_aws_scan.csv - Standard Prowler output from /output/
+	•	cis_2.0_aws_compliance.csv - Compliance output with REQUIREMENTS_ATTRIBUTES_PROFILE column
+	•	malformed_quotes.csv - Edge case with unescaped quotes in STATUS_EXTENDED
+	•	multi_account_aggregated.csv - Three accounts merged for aggregation testing
+	•	large_file_100k_rows.csv - Performance benchmark fixture
+HTML Dashboard JavaScript Patterns
+For interactive filtering, embed a minimal JavaScript filter engine in the self-contained HTML:
+	•	Store parsed findings in global JavaScript array (already done for current implementation)
+	•	Add filter state object tracking active filters for severity, status, level, search term
+	•	Implement debounced search input handler (300ms delay) for real-time filtering
+	•	Use CSS visibility toggle for filtering instead of DOM manipulation (better performance)
+	•	Store theme preference in localStorage for persistence across sessions
+
+Success Metrics
+Metric
+Current State
+Target
+Test Coverage
+~40% (estimated)
+>80%
+CIS Level Display
+Not supported
+Full L1/L2 visualization
+Interactive Filters
+Static HTML only
+5+ filter dimensions
+Export Options
+HTML only
+PDF, CSV, Executive Summary
+Risks & Mitigations
+Risk
+Impact
+Mitigation
+Prowler CSV format changes in future versions
+Medium - breaks parsing
+Version detection logic + test fixtures per Prowler major version
+HTML file size bloat with embedded JS
+Low - slower load times
+Minify embedded JS; lazy-load chart libraries
+Client-side PDF generation quality
+Medium - poor export quality
+Use html2canvas + jsPDF for pixel-perfect rendering
+
+Implementation Roadmap
+Phase 1: Foundation (Week 1-2)
+	•	Create test fixtures from real Prowler outputs (sanitized)
+	•	Implement CSV format detection logic (generic vs compliance)
+	•	Add unit tests for parser edge cases
+	•	Configure coverage reporting in CI
+Phase 2: Compliance Metadata (Week 3-4)
+	•	Parse REQUIREMENTS_ATTRIBUTES_PROFILE for CIS Level
+	•	Parse MITRE ATT&CK technique IDs from COMPLIANCE field
+	•	Update data model to include level, techniques, requirement metadata
+	•	Add L1/L2 badges and MITRE links to HTML template
+Phase 3: Interactive Features (Week 5-6)
+	•	Implement client-side filtering engine
+	•	Add filter UI components (dropdowns, search box)
+	•	Implement CIS Level filter toggle
+	•	Add filtered CSV export
+Phase 4: Polish & Export (Week 7-8)
+	•	Implement PDF export with html2canvas/jsPDF
+	•	Add theming support with CSS variables
+	•	Create executive summary export template
+	•	Performance optimization and final testing
+
+Appendix: Prowler Reference
+Key Prowler Documentation Links:
+	•	Prowler GitHub: github.com/prowler-cloud/prowler
+	•	Reporting Documentation: docs.prowler.com/tutorials/reporting
+	•	Compliance Frameworks: hub.prowler.com/compliance
+	•	CIS AWS Foundations Benchmark: cisecurity.org/benchmark/amazon_web_services
+Prowler Compliance CSV Column Reference:
+When running prowler aws --compliance cis_2.0_aws, the compliance CSV includes these additional columns not present in generic output:
+	•	REQUIREMENTS_ID, REQUIREMENTS_DESCRIPTION, REQUIREMENTS_ATTRIBUTES_SECTION, REQUIREMENTS_ATTRIBUTES_PROFILE, REQUIREMENTS_ATTRIBUTES_ASSESSMENT_STATUS, REQUIREMENTS_ATTRIBUTES_LEVEL
+— End of Document —
