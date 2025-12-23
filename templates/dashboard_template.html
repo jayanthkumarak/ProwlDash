@@ -593,6 +593,35 @@
             color: var(--text-primary);
         }
 
+        .filter-toggle {
+            display: inline-flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        .filter-toggle button {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            border-right: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .filter-toggle button:last-child {
+            border-right: none;
+        }
+
+        .filter-toggle button.active {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
         .table-section {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
@@ -1125,6 +1154,11 @@
                     <option value="">All Services</option>
                 </select>
             </div>
+            <div class="filter-toggle" id="filterLevel">
+                <button class="active" data-val="">All Levels</button>
+                <button data-val="Level 1">L1</button>
+                <button data-val="Level 2">L2</button>
+            </div>
             <div class="filter-group">
                 <label for="filterDelta">Change</label>
                 <select id="filterDelta">
@@ -1137,6 +1171,8 @@
                 <label for="filterSearch">Search</label>
                 <input type="text" id="filterSearch" placeholder="ID, resource...">
             </div>
+            <button class="btn-reset" id="btnExport"
+                style="background:var(--accent-blue);color:#fff;border-color:var(--accent-blue)">Export CSV</button>
             <button class="btn-reset" id="btnReset">Reset</button>
         </div>
         <div class="table-section">
@@ -1218,6 +1254,18 @@
                 clearCardFilter();
                 applyFilters();
             }, 150));
+
+            // Level Toggle Listener
+            document.querySelectorAll('#filterLevel button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#filterLevel button').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    clearCardFilter();
+                    applyFilters();
+                });
+            });
+
+            document.getElementById('btnExport').addEventListener('click', exportCSV);
             document.getElementById('btnReset').addEventListener('click', resetFilters);
             document.getElementById('btnShowAll').addEventListener('click', () => {
                 clearCardFilter();
@@ -1550,6 +1598,10 @@
             let delta = document.getElementById('filterDelta').value;
             let search = document.getElementById('filterSearch').value.toLowerCase();
 
+            // Get active level
+            const activeLevelBtn = document.querySelector('#filterLevel button.active');
+            const level = activeLevelBtn ? activeLevelBtn.dataset.val : '';
+
             // Apply card filter if active
             if (activeCardFilter) {
                 if (activeCardFilter.type === 'status') status = activeCardFilter.value;
@@ -1568,9 +1620,16 @@
                 if (region && r.region !== region) return false;
                 if (service && r.service !== service) return false;
                 if (delta && r.delta !== delta) return false;
+                if (level && (!r.profile || !r.profile.includes(level))) return false;
                 if (search) {
-                    const hay = [r.id, r.title, r.resource, r.resourceName, r.statusExt].join(' ').toLowerCase();
-                    if (!hay.includes(search)) return false;
+                    const hay = [
+                        r.id, r.title, r.resource, r.resourceName, r.statusExt,
+                        r.profile || '', r.mitre ? r.mitre.join(' ') : ''
+                    ].join(' ').toLowerCase();
+
+                    // Support multi-keyword search (AND logic)
+                    const terms = search.split(/\s+/);
+                    return terms.every(term => hay.includes(term));
                 }
                 return true;
             });
@@ -1709,6 +1768,42 @@
         function truncate(s, n) {
             if (!s) return '';
             return s.length > n ? s.slice(0, n) + '...' : s;
+        }
+
+        function exportCSV() {
+            if (!filtered || !filtered.length) {
+                alert('No data to export');
+                return;
+            }
+
+            // Define columns
+            const cols = ['id', 'title', 'status', 'severity', 'acctId', 'region', 'service', 'resource', 'profile', 'mitre'];
+
+            // Header
+            let csv = cols.join(',') + '\\n';
+
+            // Rows
+            filtered.forEach(r => {
+                const row = cols.map(c => {
+                    let val = r[c] || '';
+                    if (Array.isArray(val)) val = val.join(' ');
+                    // Escape quotes and wrap in quotes
+                    val = String(val).replace(/"/g, '""');
+                    return `"${val}"`;
+                });
+                csv += row.join(',') + '\\n';
+            });
+
+            // Trigger download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'prowldash_export.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         init();
