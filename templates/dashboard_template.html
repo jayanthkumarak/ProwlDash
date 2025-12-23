@@ -602,6 +602,22 @@
             color: var(--text-primary);
         }
 
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--brand-primary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .btn-link:hover {
+            background: var(--bg-hover);
+            text-decoration: underline;
+        }
+
         .filter-toggle {
             display: inline-flex;
             background: var(--bg-card);
@@ -635,7 +651,7 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 10px;
-            overflow: hidden;
+            /* overflow: hidden; Removed to allow sticky header to work with page scroll */
         }
 
         .table-header {
@@ -644,6 +660,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: var(--bg-secondary);
+            /* Ensure opaque background */
+            position: sticky;
+            /* Make header toolbar sticky too? Optional */
+            z-index: 11;
         }
 
         .table-header h2 {
@@ -656,10 +677,7 @@
             color: var(--text-muted);
         }
 
-        .table-scroll {
-            max-height: 600px;
-            overflow-y: auto;
-        }
+        /* .table-scroll removed */
 
         .table-scroll::-webkit-scrollbar {
             width: 6px;
@@ -683,8 +701,11 @@
         thead {
             position: sticky;
             top: 0;
-            background: var(--bg-tertiary);
+            background: var(--bg-secondary);
+            /* Match table section bg */
             z-index: 10;
+            box-shadow: 0 1px 0 var(--border);
+            /* Visual separator */
         }
 
         th {
@@ -1180,11 +1201,13 @@
                 <label for="filterSearch">Search</label>
                 <input type="text" id="filterSearch" placeholder="ID, resource...">
             </div>
-            <button class="btn-reset" id="btnExport"
-                style="background:var(--brand-primary);color:#fff;border-color:var(--brand-primary)">CSV</button>
-            <button class="btn-reset" id="btnExportPDF"
-                style="background:var(--brand-secondary);color:#fff;border-color:var(--brand-secondary)">PDF</button>
-            <button class="btn-reset" id="btnReset">Reset</button>
+            <div class="filter-group hint-text" style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+                <span style="font-size:12px; font-weight:500; color:var(--text-muted)">Export:</span>
+                <button onclick="exportCSV()" class="btn-link" title="Download CSV">CSV</button>
+                <span style="color:var(--border)">|</span>
+                <button onclick="exportPDF()" class="btn-link" id="btnExportPDF" title="Download PDF">PDF</button>
+            </div>
+            <button class="btn-reset" id="btnReset">Reset Filters</button>
         </div>
         <div class="table-section">
             <div class="table-header">
@@ -1895,6 +1918,8 @@
 
         init();
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 
 </html>
