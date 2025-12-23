@@ -745,7 +745,7 @@ def show_help():
     """Display comprehensive help information."""
     help_text = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V3                            ║
+║                    PROWLER DASHBOARD GENERATOR V4.5                          ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION
