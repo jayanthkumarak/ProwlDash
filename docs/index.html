@@ -347,8 +347,8 @@
 
             <h3>Parallel Processing</h3>
             <p>When processing multiple CSV files, ProwlDash automatically distributes work across all available CPU
-                cores. Processing 8 files completes in ~7ms versus ~52ms sequentially — approximately <strong>8x
-                    faster</strong>.</p>
+                cores. Speedup is <strong>linear with CPU cores</strong>: processing N files on an M-core machine
+                completes in approximately 1/min(N,M) the sequential time.</p>
 
             <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>

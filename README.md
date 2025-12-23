@@ -189,7 +189,7 @@ When processing multiple CSV files, ProwlDash automatically distributes work acr
 prowldash data/*.csv
 ```
 
-**Benchmark:** 8 files processed in ~7ms (vs ~52ms sequential) — approximately **8x faster**.
+**Speedup:** Linear with CPU cores. Processing N files on an M-core machine completes in approximately 1/min(N,M) the sequential time. For example, 8 files on a 14-core Apple Silicon Mac processes ~8x faster.
 
 ### Smart CSV Parsing
 
