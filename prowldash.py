@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prowler Dashboard Generator V4.9.1
+Prowler Dashboard Generator V4.9.2
 
 Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
@@ -37,7 +37,7 @@ except ImportError:
     pd = None
 
 
-VERSION = "4.9.1"
+VERSION = "4.9.2"
 
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here
@@ -534,7 +534,6 @@ def normalize_row(row: dict, csv_format: str) -> dict:
             "risk": row.get("RISK", ""),
             "remediation": row.get("REMEDIATION_RECOMMENDATION_TEXT", ""),
             "remediationUrl": row.get("REMEDIATION_RECOMMENDATION_URL", ""),
-            "remediationUrl": row.get("REMEDIATION_RECOMMENDATION_URL", ""),
             "compliance": row.get("COMPLIANCE", ""),
             "mitre": extract_mitre_techniques(row.get("COMPLIANCE", "")),
             "_raw": row,
@@ -804,7 +803,7 @@ def show_help():
     """Display comprehensive help information."""
     help_text = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V4.9.1                        ║
+║                    PROWLER DASHBOARD GENERATOR V4.9.2                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION

@@ -1614,7 +1614,9 @@
                 if (r.mitre && r.mitre.length) {
                     metaBadges += '<div class="meta-badges">';
                     r.mitre.forEach(m => {
-                        metaBadges += `<a href="https://attack.mitre.org/techniques/${m}/" target="_blank" class="badge mitre" onclick="event.stopPropagation()">${m}</a>`;
+                        // MITRE URL format uses slashes for sub-techniques (T1552.001 -> T1552/001)
+                        const url = `https://attack.mitre.org/techniques/${m.replace('.', '/')}/`;
+                        metaBadges += `<a href="${url}" target="_blank" class="badge mitre" onclick="event.stopPropagation()">${m}</a>`;
                     });
                     metaBadges += '</div>';
                 }
