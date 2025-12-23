@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prowler Dashboard Generator V5.1.1
+Prowler Dashboard Generator V5.1.2
 
 Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
@@ -37,7 +37,7 @@ except ImportError:
     pd = None
 
 
-VERSION = "5.1.1"
+VERSION = "5.1.2"
 
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here

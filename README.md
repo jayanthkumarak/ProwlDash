@@ -1,6 +1,6 @@
 # ProwlDash
 
-[![Version](https://img.shields.io/badge/version-5.1.1-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v5.1.2-blue)rightgreen.svg)](CHANGELOG.md)
 [![CI](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanthkumarak/ProwlDash/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/)

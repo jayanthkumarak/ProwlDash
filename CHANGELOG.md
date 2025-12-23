@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.2] - 2025-12-23
+### Added
+- **Testing**: Added new integration test suite `tests/test_generation.py` to verify HTML/JS integrity and prevent regression.
+### Fixed
+- **UI**: Fixed sticky header to properly stack "Security Controls" and column headers for a "freeze pane" effect.
+- **UI**: Removed truncation from "Title" column to display full check descriptions naturally.
+
 ## [5.1.1] - 2025-12-23
 ### Fixed
 - **Critical**: Fixed Dashboard rendering crash caused by regression in V5.1.0 where removed HTML elements (`filterDelta`) were still referenced in JavaScript.
