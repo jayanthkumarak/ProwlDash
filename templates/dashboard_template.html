@@ -1258,10 +1258,13 @@
 
 
             ['filterAccount', 'filterStatus', 'filterSeverity', 'filterRegion', 'filterService', 'filterDelta'].forEach(id => {
-                document.getElementById(id).addEventListener('change', () => {
-                    clearCardFilter();
-                    applyFilters();
-                });
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => {
+                        clearCardFilter();
+                        applyFilters();
+                    });
+                }
             });
             document.getElementById('filterSearch').addEventListener('input', debounce(() => {
                 clearCardFilter();
