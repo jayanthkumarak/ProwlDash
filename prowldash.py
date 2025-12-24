@@ -27,6 +27,8 @@ from pathlib import Path
 from datetime import datetime
 from collections import defaultdict, Counter
 from concurrent.futures import ProcessPoolExecutor
+import time
+import platform
 
 # Optional Pandas for faster CSV parsing (5-10x speedup for large files)
 try:
@@ -279,7 +281,7 @@ DEFAULT_FRAMEWORK = {
 }
 
 
-def parse_csv(filepath: str) -> list[dict]:
+def parse_csv(filepath: str) -> tuple[list[dict], str]:
     """Parse semicolon-delimited Prowler CSV.
     
     Performance strategy based on benchmarking:
@@ -288,6 +290,9 @@ def parse_csv(filepath: str) -> list[dict]:
     
     Benchmarks show stdlib is ~2x faster for typical Prowler CSVs because
     Pandas has significant overhead and `to_dict('records')` is slow.
+    
+    Returns:
+        tuple(rows, parser_name)
     """
     PANDAS_SIZE_THRESHOLD = 10 * 1024 * 1024  # 10MB
     
@@ -302,7 +307,7 @@ def parse_csv(filepath: str) -> list[dict]:
             with pd.read_csv(filepath, delimiter=";", dtype=str, keep_default_na=False, chunksize=5000) as reader:
                 for chunk in reader:
                     rows.extend(chunk.to_dict('records'))
-            return rows
+            return rows, "Pandas (Chunked)"
         except MemoryError:
             print(f"  ⚠️  Memory error parsing {os.path.basename(filepath)} - file too large")
             print("      Consider splitting the file or increasing system memory")
@@ -325,7 +330,7 @@ def parse_csv(filepath: str) -> list[dict]:
     except Exception as e:
         print(f"  ❌ Failed to parse {os.path.basename(filepath)}: {e}")
         raise
-    return rows
+    return rows, "CSV Stdlib"
 
 
 def detect_format(rows: list[dict]) -> str:
@@ -831,7 +836,9 @@ OPTIONS
   --output, -o <path>     Output directory (default: ./output)
   --framework, -f <name>  Force specific framework (auto-detected if omitted)
   --max-workers <num>     Limit number of parallel workers (default: auto)
+  --max-workers <num>     Limit number of parallel workers (default: auto)
   --no-timestamp          Don't create timestamped subfolder
+  --verbose               Show detailed execution statistics
   --list-frameworks       List all supported frameworks
 
 EXAMPLES
@@ -924,13 +931,17 @@ def process_single_file(args: tuple) -> dict | None:
     if not os.path.exists(filepath):
         return {'error': f"File not found: {filepath}", 'filepath': filepath}
     
+    start_time = time.time()
     try:
-        rows = parse_csv(filepath)
+        rows, parser_name = parse_csv(filepath)
     except Exception as e:
         return {'error': f"Parse error: {e}", 'filepath': filepath}
     
     if not rows:
         return {'error': "Empty file", 'filepath': filepath}
+    
+    duration = time.time() - start_time
+    file_size = os.path.getsize(filepath)
     
     csv_format = detect_format(rows)
     fw = detect_primary_framework(rows, filepath, user_framework)
@@ -945,7 +956,10 @@ def process_single_file(args: tuple) -> dict | None:
         'csv_format': csv_format,
         'rows': normalized,
         'scan_date': scan_date,
-        'row_count': len(rows)
+        'row_count': len(rows),
+        'parser': parser_name,
+        'parse_duration': duration,
+        'file_size': file_size
     }
 
 
@@ -1099,7 +1113,9 @@ def parse_args(argv: list) -> dict:
         'framework': None,
         'no_timestamp': False,
         'list_frameworks': False,
+        'list_frameworks': False,
         'max_workers': None,
+        'verbose': False,
     }
 
     i = 1
@@ -1139,6 +1155,8 @@ def parse_args(argv: list) -> dict:
             args['no_timestamp'] = True
         elif arg == '--list-frameworks':
             args['list_frameworks'] = True
+        elif arg == '--verbose':
+            args['verbose'] = True
         elif not arg.startswith('-'):
             args['files'].append(arg)
         i += 1
@@ -1147,6 +1165,7 @@ def parse_args(argv: list) -> dict:
 
 
 def main():
+    total_start_time = time.time()
     print_banner()
     # Handle help and version flags
     if len(sys.argv) < 2 or any(arg in sys.argv for arg in ['--help', '-h']):
@@ -1196,7 +1215,9 @@ def main():
     if len(files) == 1:
         # Single file: skip parallelism overhead
         result = process_single_file((files[0], user_framework))
+        processed_files_stats = []
         if result and 'error' not in result:
+            processed_files_stats.append(result)
             fw = result['framework']
             framework_files[fw].append((result['filepath'], result['rows'], result['scan_date']))
             print(f"  ✓ {os.path.basename(result['filepath'])}: {result['fw_info']['name']}, "
@@ -1210,9 +1231,11 @@ def main():
             # Submit all files for processing
             file_args = [(f, user_framework) for f in files]
             results = executor.map(process_single_file, file_args)
+            processed_files_stats = []
             
             for result in results:
                 if result and 'error' not in result:
+                    processed_files_stats.append(result)
                     fw = result['framework']
                     framework_files[fw].append((result['filepath'], result['rows'], result['scan_date']))
                     print(f"  ✓ {os.path.basename(result['filepath'])}: {result['fw_info']['name']}, "
@@ -1345,6 +1368,60 @@ def main():
     if generated:
         print(f"  {output_dir / 'index.html'}")
     print(f"\nOpen {output_dir / 'index.html'} in any browser.")
+
+    # Execution Summary
+    total_duration = time.time() - total_start_time
+    
+    if args['verbose']:
+        print("\n" + "-" * 60)
+        print("EXECUTION SUMMARY")
+        print("-" * 60)
+        print(f"Total Duration  : {total_duration:.2f}s")
+        print(f"Total Files     : {len(processed_files_stats)}")
+        total_rows = sum(s['row_count'] for s in processed_files_stats)
+        print(f"Total Rows      : {total_rows}")
+        if total_duration > 0:
+            print(f"Throughput      : {total_rows / total_duration:.0f} rows/sec")
+        print(f"Concurrency     : {worker_count} workers (of {cpu_count} cores available)")
+        print(f"Platform        : {platform.python_implementation()} {platform.python_version()} ({platform.system()})")
+        
+        print("\nFile Details:")
+        for stats in processed_files_stats:
+            size_mb = stats['file_size'] / (1024 * 1024)
+            print(f"- {os.path.basename(stats['filepath'])} ({size_mb:.2f}MB)")
+            print(f"  Parser: {stats['parser']} | Time: {stats['parse_duration']:.3f}s | Rows: {stats['row_count']}")
+        print("-" * 60)
+    else:
+        # Standard concise summary
+        total_rows = sum(s['row_count'] for s in processed_files_stats)
+        print(f"Done in {total_duration:.2f}s ({len(processed_files_stats)} files, {total_rows} rows).")
+
+    # Execution Summary
+    total_duration = time.time() - total_start_time
+    
+    if args['verbose']:
+        print("\n" + "-" * 60)
+        print("EXECUTION SUMMARY")
+        print("-" * 60)
+        print(f"Total Duration  : {total_duration:.2f}s")
+        print(f"Total Files     : {len(processed_files_stats)}")
+        total_rows = sum(s['row_count'] for s in processed_files_stats)
+        print(f"Total Rows      : {total_rows}")
+        if total_duration > 0:
+            print(f"Throughput      : {total_rows / total_duration:.0f} rows/sec")
+        print(f"Concurrency     : {worker_count} workers (of {cpu_count} cores available)")
+        print(f"Platform        : {platform.python_implementation()} {platform.python_version()} ({platform.system()})")
+        
+        print("\nFile Details:")
+        for stats in processed_files_stats:
+            size_mb = stats['file_size'] / (1024 * 1024)
+            print(f"- {os.path.basename(stats['filepath'])} ({size_mb:.2f}MB)")
+            print(f"  Parser: {stats['parser']} | Time: {stats['parse_duration']:.3f}s | Rows: {stats['row_count']}")
+        print("-" * 60)
+    else:
+        # Standard concise summary
+        total_rows = sum(s['row_count'] for s in processed_files_stats)
+        print(f"Done in {total_duration:.2f}s ({len(processed_files_stats)} files, {total_rows} rows).")
 
 
 def print_banner():
