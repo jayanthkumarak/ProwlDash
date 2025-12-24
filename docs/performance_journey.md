@@ -64,4 +64,14 @@ We implemented rigorous XSS prevention mechanism (`safe_json_dumps`) that saniti
 A new adaptive parallelism model bounds the worker count to `min(cpu_count, file_count)`. This prevents the overhead of spinning up 14+ processes when processing just 1 or 2 files, effectively balancing startup cost vs. parallel throughput.
 
 **Benchmark Results:**
-With the new chunked reading optimization for large files and adaptive workers, ProwlDash achieves **~28,000 rows/second** throughput on standard hardware, with significantly reduced peak memory pressure.
+With the new chunked reading optimization for large files and adaptive workers, ProwlDash achieves **~26,700 rows/second** throughput on standard hardware, with significantly reduced peak memory pressure.
+
+## 5. V5.1.2 Benchmark Update (December 2025)
+
+**Environment:**
+*   **Version:** ProwlDash V5.1.2
+*   **Python:** 3.12 (Standard CPython)
+*   **Workload:** 4 files, 5,000 rows each (20,000 total rows)
+*   **Result:** **26,690 rows/sec** (0.749s duration)
+
+This confirms that the optimizations introduced in V4.5 and V5.0 continue to deliver high throughput while maintaining robustness.
