@@ -1113,7 +1113,7 @@ def parse_args(argv: list) -> dict:
         'framework': None,
         'no_timestamp': False,
         'list_frameworks': False,
-        'list_frameworks': False,
+
         'max_workers': None,
         'verbose': False,
     }

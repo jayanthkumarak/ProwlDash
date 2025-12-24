@@ -80,7 +80,7 @@ class TestCsvParsing(unittest.TestCase):
         
         csv_content = "ACCOUNT_UID;CHECK_ID\n123;check-1"
         with patch("builtins.open", mock_open(read_data=csv_content)):
-            rows = parse_csv("dummy.csv")
+            rows, _ = parse_csv("dummy.csv")
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["ACCOUNT_UID"], "123")
             
@@ -103,7 +103,7 @@ class TestCsvParsing(unittest.TestCase):
         
         mock_pd.read_csv.return_value = mock_reader
         
-        rows = parse_csv("huge.csv")
+        rows, _ = parse_csv("huge.csv")
         
         mock_pd.read_csv.assert_called_once()
         self.assertEqual(len(rows), 1)
@@ -119,7 +119,7 @@ class TestCsvParsing(unittest.TestCase):
             # With quotechar='"', the parser might still struggle with unescaped quotes inside quotes
             # depending on the implementation. However, we want to ensure it doesn't CRASH.
             try:
-                rows = parse_csv("malformed.csv")
+                _ = parse_csv("malformed.csv")
                 # If it extracts "Active with "quoted" word" correctly as one field, great.
                 # If it splits it, that's also acceptable for now as long as it doesn't raise.
             except Exception as e:
@@ -133,14 +133,14 @@ class TestCsvParsing(unittest.TestCase):
         # 1. Generic AWS Scan
         generic_path = os.path.join(fixtures_dir, "generic_aws_scan.csv")
         if os.path.exists(generic_path):
-            rows = parse_csv(generic_path)
+            rows, _ = parse_csv(generic_path)
             self.assertEqual(len(rows), 2)
             self.assertEqual(detect_format(rows), "main")
             
         # 2. CIS Compliance Scan
         cis_path = os.path.join(fixtures_dir, "cis_2.0_aws_compliance.csv")
         if os.path.exists(cis_path):
-            rows = parse_csv(cis_path)
+            rows, _ = parse_csv(cis_path)
             self.assertEqual(len(rows), 2)
             self.assertEqual(detect_format(rows), "compliance")
             self.assertEqual(rows[0]["REQUIREMENTS_ATTRIBUTES_PROFILE"], "Level 1")
