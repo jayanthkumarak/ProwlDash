@@ -6,9 +6,9 @@ Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
 Supports 40+ compliance frameworks including CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.
 
 Usage:
-    python generate.py <csv_file> [csv_file2 ...]
-    python generate.py data/main/*.csv
-    python generate.py --framework PCI-DSS data/*.csv
+    prowldash <csv_file> [csv_file2 ...]
+    prowldash data/main/*.csv
+    prowldash --framework PCI-DSS data/*.csv
 
 Features:
     - Auto-detection of compliance framework from CSV content
@@ -812,18 +812,18 @@ def get_template(framework: str) -> str:
 
 def show_help():
     """Display comprehensive help information."""
-    help_text = """
+    help_text = f"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PROWLER DASHBOARD GENERATOR V5.1.1                        ║
+║                    PROWLER DASHBOARD GENERATOR V{VERSION}                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 DESCRIPTION
   Framework-agnostic dashboard generator for Prowler AWS security scan outputs.
-  Auto-detects and supports 20+ compliance frameworks including:
+  Auto-detects and supports {len(FRAMEWORK_REGISTRY)}+ compliance frameworks including:
     CIS, FSBP, PCI-DSS, HIPAA, NIST, SOC2, ISO27001, GDPR, FedRAMP, and more.
 
 USAGE
-  python3 generate.py [OPTIONS] <csv_file> [csv_file2 ...]
+  prowldash [OPTIONS] <csv_file> [csv_file2 ...]
 
 OPTIONS
   --help, -h              Show this help message
@@ -836,16 +836,16 @@ OPTIONS
 
 EXAMPLES
   # Auto-detect framework from CSV content
-  python3 generate.py report.csv
+  prowldash report.csv
 
   # Process multiple files (grouped by detected framework)
-  python3 generate.py data/main/*.csv
+  prowldash data/main/*.csv
 
   # Force specific framework
-  python3 generate.py --framework hipaa hipaa_report.csv
+  prowldash --framework hipaa hipaa_report.csv
 
   # Custom output directory
-  python3 generate.py -o /path/to/reports data/main/*.csv
+  prowldash -o /path/to/reports data/main/*.csv
 
 FRAMEWORK AUTO-DETECTION
   The generator detects frameworks from:
@@ -895,7 +895,7 @@ def list_frameworks():
     for fw_id, fw_info in sorted(FRAMEWORK_REGISTRY.items()):
         print(f"  {fw_info['icon']}  {fw_id:<20} {fw_info['name']}")
     print("\nUse --framework <id> to force a specific framework.")
-    print("Example: python3 generate.py --framework hipaa report.csv\n")
+    print("Example: prowldash --framework hipaa report.csv\n")
 
 
 def show_version():
