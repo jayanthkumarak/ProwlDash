@@ -40,7 +40,7 @@ except ImportError:
     pd = None
 
 
-VERSION = "4.7.0"
+VERSION = "4.7.1"
 
 # =============================================================================
 # FRAMEWORK REGISTRY - Add new frameworks here

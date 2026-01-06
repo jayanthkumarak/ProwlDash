@@ -5,14 +5,14 @@
 > Turn your raw CSV scan data into compliant, executive-ready visualizations.
 
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
-![Version](https://img.shields.io/badge/version-4.7.0-green.svg)
+![Version](https://img.shields.io/badge/version-4.7.1-green.svg)
 ![Python](https://img.shields.io/badge/python-3.7+-blue.svg)
 
 ProwlDash takes the CSV output from [Prowler](https://github.com/prowler-cloud/prowler) and generates a beautiful, interactive, single-file HTML dashboard. It supports multi-account scanning, historical comparisons, and multiple compliance frameworks.
 
 ---
 
-## 🚀 Key Features (v4.7.0)
+## 🚀 Key Features (v4.7.1)
 
 -   **Framework Agnostic**: Auto-detects and supports 40+ frameworks (CIS, FSBP, PCI-DSS, HIPAA, NIST, etc.).
 -   **Smart Remediation Detection**: 
