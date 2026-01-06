@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install ruff pytest pytest-cov pandas
+
+      - name: Lint with Ruff
+        run: ruff check prowldash.py
+
+      - name: Smoke test - help
+        run: python3 prowldash.py --help
+
+      - name: Smoke test - version
+        run: python3 prowldash.py --version
+
+      - name: Smoke test - list frameworks
+        run: python3 prowldash.py --list-frameworks
+
+      - name: Run Tests with Coverage
+        run: |
+          pytest --cov=prowldash --cov-report=term-missing tests/
+
+      - name: Benchmark
+        run: python3 tools/benchmark.py --files 4 --rows 1000

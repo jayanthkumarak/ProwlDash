@@ -1,0 +1,5 @@
+ACCOUNT_UID;ACCOUNT_NAME;REGION;CHECK_ID;CHECK_TITLE;STATUS;STATUS_EXTENDED;SEVERITY;SERVICE_NAME;RESOURCE_UID;RESOURCE_NAME;RISK;REMEDIATION_RECOMMENDATION_TEXT;REMEDIATION_RECOMMENDATION_URL;COMPLIANCE
+123456789012;test-acct;us-east-1;check_quotas;Check quotas;FAIL;"Extended status with "unescaped" quotes inside";Medium;Quota;arn:aws:quota::123:q1;q1;;;;
+123456789012;test-acct;us-east-1;check_multiline;Check multiline;FAIL;"This is a 
+multiline value
+test";Low;Test;arn:aws:test::123:t1;t1;;;;
