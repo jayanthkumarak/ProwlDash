@@ -18,17 +18,12 @@ The tool runs entirely offline, requires no infrastructure, and is designed to s
 
 ### Compliance Intelligence
 *   **MITRE ATT&CK**: Maps findings to MITRE Tactics and Techniques with links to the official Knowledge Base.
-*   **Framework Agnostic**: Supports 40+ frameworks including PCI-DSS, HIPAA, NIST 800-53, SOC2, and FSBP.
+*   **Framework Agnostic**: Supports 21+ frameworks including PCI-DSS, HIPAA, NIST 800-53, SOC2, and FSBP.
 
 ### Reporting
 *   **Customization**: Supports Dark Mode and custom corporate branding via CSS.
 
 ![Light Theme Dashboard](docs/images/dashboard-light.png)
-
-### Performance & Security
-*   **Hybrid Parsing**: Automatically switches between standard library and Pandas parsing based on dataset size (>10MB) for optimal performance.
-*   **Parallel Processing**: Utilizes multiple CPU cores for multi-account aggregation.
-*   **Secure**: Strict output encoding prevents injection attacks.
 
 ### Performance & Security
 *   **Hybrid Parsing**: Automatically switches between standard library and Pandas parsing based on dataset size (>10MB) for optimal performance.
@@ -91,22 +86,89 @@ prowldash prowler-output.csv --framework pci-dss
 
 ## Advanced Options
 
-| Flag | Description |
-| :--- | :--- |
-| `--framework <ID>` | Force a specific framework ID. |
-| `--output <DIR>` | Specify a custom output directory. |
-| `--no-timestamp` | Disable timestamped subdirectories. |
-| `--max-workers <N>` | Limit parallel worker processes. |
+ProwlDash provides comprehensive command-line options for fine-grained control:
+
+| Flag | Short | Description | Example |
+| :--- | :--- | :--- | :--- |
+| `--help` | `-h` | Show help message and exit | `prowldash --help` |
+| `--version` | `-v` | Show version information and exit | `prowldash --version` |
+| `--framework <ID>` | `-f` | Force a specific framework ID (overrides auto-detection) | `prowldash -f pci-dss report.csv` |
+| `--output <DIR>` | `-o` | Specify a custom output directory | `prowldash -o ./reports data/*.csv` |
+| `--no-timestamp` | | Disable timestamped subdirectories | `prowldash --no-timestamp report.csv` |
+| `--max-workers <N>` | | Limit parallel worker processes (default: auto) | `prowldash --max-workers 4 data/*.csv` |
+| `--verbose` | | Show detailed execution statistics | `prowldash --verbose report.csv` |
+| `--list-frameworks` | | List all supported frameworks and exit | `prowldash --list-frameworks` |
+
+### Examples
+
+**View all available frameworks:**
+```bash
+prowldash --list-frameworks
+```
+
+**Force a specific framework:**
+```bash
+prowldash --framework hipaa hipaa_scan.csv
+```
+
+**Generate with detailed statistics:**
+```bash
+prowldash --verbose --output ./monthly-report data/*.csv
+```
+
+**Process with limited parallelism:**
+```bash
+prowldash --max-workers 2 --no-timestamp large_scan.csv
+```
 
 ## Supported Frameworks
-ProwlDash supports all major Prowler compliance frameworks, including:
-*   CIS AWS Foundations Benchmark
-*   AWS Foundational Security Best Practices (FSBP)
-*   PCI DSS
-*   HIPAA
-*   NIST 800-53
-*   SOC 2
-*   ISO 27001
+
+ProwlDash supports **21 compliance frameworks** with auto-detection capabilities. Use the `--framework` flag with the framework ID to override auto-detection.
+
+### Framework Reference
+
+| Framework ID | Full Name | Description |
+| :--- | :--- | :--- |
+| `cis` | CIS AWS Benchmark | CIS Amazon Web Services Foundations Benchmark compliance checks |
+| `fsbp` | AWS FSBP | AWS Foundational Security Best Practices standard compliance checks |
+| `aws-well-architected` | Well-Architected | AWS Well-Architected Framework security pillar checks |
+| `pci-dss` | PCI DSS | Payment Card Industry Data Security Standard compliance checks |
+| `hipaa` | HIPAA | Health Insurance Portability and Accountability Act compliance checks |
+| `gdpr` | GDPR | General Data Protection Regulation compliance checks for EU data protection |
+| `soc2` | SOC 2 | Service Organization Control 2 Trust Services Criteria compliance checks |
+| `nist-800-53` | NIST 800-53 | NIST Special Publication 800-53 security and privacy controls |
+| `nist-csf` | NIST CSF | NIST Cybersecurity Framework compliance checks |
+| `nist-800-171` | NIST 800-171 | NIST Special Publication 800-171 CUI protection controls |
+| `iso27001` | ISO 27001 | ISO/IEC 27001 Information Security management checks |
+| `fedramp` | FedRAMP | Federal Risk and Authorization Management Program compliance for US federal cloud services |
+| `cisa` | CISA | Cybersecurity and Infrastructure Security Agency cybersecurity best practices |
+| `mitre-attack` | MITRE ATT&CK | MITRE ATT&CK Framework adversarial tactics and techniques |
+| `ens` | ENS | Esquema Nacional de Seguridad (Spain) National Security Scheme compliance |
+| `kisa` | KISA ISMS-P | Korea Internet & Security Agency ISMS-P information security certification |
+| `ffiec` | FFIEC | Federal Financial Institutions Examination Council cybersecurity assessment for financial institutions |
+| `rbi` | RBI CSF | Reserve Bank of India Cyber Security Framework for Indian banks |
+| `nis2` | NIS2 | Network and Information Security Directive 2 EU cybersecurity requirements |
+| `c5` | BSI C5 | Cloud Computing Compliance Criteria Catalogue German BSI C5 cloud security attestation |
+| `gxp` | GxP | Good Practice Guidelines compliance for life sciences |
+
+### Framework Auto-Detection
+
+ProwlDash automatically detects frameworks from:
+1. **COMPLIANCE column** in CSV (e.g., `"CIS-5.0: 1.1 | HIPAA: 164_308"`)
+2. **Filename patterns** (e.g., `pci_report.csv` → PCI-DSS)
+3. **`--framework` flag** (overrides auto-detection)
+
+**Usage:**
+```bash
+# Auto-detect (recommended)
+prowldash scan_results.csv
+
+# Force specific framework
+prowldash --framework pci-dss scan_results.csv
+
+# List all available frameworks
+prowldash --list-frameworks
+```
 
 ## License
 Apache-2.0
