@@ -80,4 +80,3 @@ python3 -m unittest tests/test_prowldash.py
 Apache 2.0. See [LICENSE](LICENSE) for details.
 
 ---
-*Built with ❤️ for the Cloud Security Community.*
