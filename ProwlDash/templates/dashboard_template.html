@@ -5,6 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Compliance Dashboard - Indupro</title>
+
+    <!-- Security Headers -->
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net stackpath.bootstrapcdn.com pro.fontawesome.com; img-src 'self' data: https:; font-src 'self' pro.fontawesome.com; connect-src 'self';">
+
+    <!-- Clickjacking Protection -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+
+    <!-- MIME Type Sniffing Protection -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
     <style>
         /* Colorblind-friendly palette based on Okabe-Ito
            Reference: https://siegal.bio.nyu.edu/color-palette/
@@ -1170,11 +1181,11 @@
             <div class="subtitle" id="headerSubtitle">Indupro AWS Accounts</div>
         </div>
         <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
-            <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg id="sunIcon" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            <svg id="moonIcon" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                 style="display:none">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -1300,7 +1311,7 @@
 
             if (DATA.scanInfo) {
                 document.getElementById('headerSubtitle').innerHTML =
-                    'Indupro AWS Accounts | <strong>' + DATA.scanInfo + '</strong>';
+                    'Indupro AWS Accounts | <strong>' + esc(DATA.scanInfo) + '</strong>';
             }
 
 
@@ -1415,14 +1426,14 @@
                 const acct = DATA.accounts[acctId];
                 const isActive = activeTab === acctId;
                 const acctStats = DATA.accountStats[acctId] || { total: 0 };
-                html += `<div class="tab ${(isActive ? 'active' : '')}" 
-                    data-tab="${acctId}" 
-                    onclick="setTab('${acctId}')"
-                    role="tab" 
+                html += `<div class="tab ${(isActive ? 'active' : '')}"
+                    data-tab="${esc(acctId)}"
+                    onclick="setTab('${esc(acctId)}')"
+                    role="tab"
                     tabindex="0"
                     aria-selected="${isActive}"
-                    onkeydown="if(event.key==='Enter'||event.key===' ')setTab('${acctId}')">
-                    <span>${acct.display || acct.name}</span>
+                    onkeydown="if(event.key==='Enter'||event.key===' ')setTab('${esc(acctId)}')">
+                    <span>${esc(acct.display || acct.name)}</span>
                     <span class="tab-count">${acctStats.total}</span>
                 </div>`;
             });
@@ -1679,15 +1690,15 @@
         function populateFilters() {
             const acctSel = document.getElementById('filterAccount');
             Object.entries(DATA.accounts).forEach(([id, info]) => {
-                acctSel.innerHTML += `<option value="${id}">${info.short} (${id.slice(-4)})</option>`;
+                acctSel.innerHTML += `<option value="${esc(id)}">${esc(info.short)} (${esc(id.slice(-4))})</option>`;
             });
             const regSel = document.getElementById('filterRegion');
             (DATA.regions || []).forEach(r => {
-                regSel.innerHTML += `<option value="${r}">${r}</option>`;
+                regSel.innerHTML += `<option value="${esc(r)}">${esc(r)}</option>`;
             });
             const svcSel = document.getElementById('filterService');
             (DATA.services || []).forEach(s => {
-                svcSel.innerHTML += `<option value="${s}">${s}</option>`;
+                svcSel.innerHTML += `<option value="${esc(s)}">${esc(s)}</option>`;
             });
         }
 
@@ -1776,12 +1787,12 @@
                     metaBadges += '<div class="meta-badges">';
                     r.mitre.forEach(m => {
 
-                        const url = `https://attack.mitre.org/techniques/${m.replace('.', '/')}/`;
-                        metaBadges += `<a href="${url}" target="_blank" class="badge mitre" onclick="event.stopPropagation()">${m}</a>`;
+                        const url = `https://attack.mitre.org/techniques/${encodeURIComponent(m.replace('.', '/'))}/`;
+                        metaBadges += `<a href="${url}" target="_blank" class="badge mitre" onclick="event.stopPropagation()">${esc(m)}</a>`;
                     });
                     metaBadges += '</div>';
                 }
-                const sevBadge = r.severity ? `<span class="severity-badge ${r.severity}">${r.severity}</span>` : '<span class="severity-badge">-</span>';
+                const sevBadge = r.severity ? `<span class="severity-badge ${esc(r.severity)}">${esc(r.severity)}</span>` : '<span class="severity-badge">-</span>';
                 return `<tr data-idx="${i}">
                     <td>
                         <span class="check-id">${esc(r.id)}</span>
@@ -1793,10 +1804,10 @@
                         <div>${esc(r.title)}</div>
                         <div class="check-desc">${esc(truncate(r.statusExt, 40))}</div>
                     </td>
-                    <td><span class="badge ${r.status.toLowerCase()}">${r.status}</span>${deltaTag}</td>
+                    <td><span class="badge ${r.status.toLowerCase()}">${esc(r.status)}</span>${deltaTag}</td>
                     <td>${sevBadge}</td>
-                    <td><span class="account-tag ${getAcctClass(r.acctId)}">${DATA.accounts[r.acctId]?.short || r.acctId.slice(-6)}</span></td>
-                    <td><span class="service-tag">${r.service || '-'}</span></td>
+                    <td><span class="account-tag ${getAcctClass(r.acctId)}">${esc(DATA.accounts[r.acctId]?.short || r.acctId.slice(-6))}</span></td>
+                    <td><span class="service-tag">${esc(r.service || '-')}</span></td>
                 </tr>`;
             }).join('');
 
@@ -1806,17 +1817,17 @@
         }
 
         function showDetail(r) {
-            document.getElementById('detailTitle').textContent = `${r.id} - ${truncate(r.title, 45)}`;
-            const sevBadge = r.severity ? `<span class="severity-badge ${r.severity}">${r.severity.toUpperCase()}</span>` : '';
+            document.getElementById('detailTitle').textContent = `${esc(r.id)} - ${truncate(esc(r.title), 45)}`;
+            const sevBadge = r.severity ? `<span class="severity-badge ${esc(r.severity)}">${esc(r.severity.toUpperCase())}</span>` : '';
             document.getElementById('detailBody').innerHTML = `
                 <div class="detail-grid">
                     <div class="detail-block">
                         <h4>Status</h4>
                         <p>
-                            <span class="badge ${r.status.toLowerCase()}">${r.status}</span>
+                            <span class="badge ${r.status.toLowerCase()}">${esc(r.status)}</span>
                             ${r.delta === 'fixed' ? '<span class="badge-sm fixed">FIXED</span>' : ''}
                             ${r.delta === 'new-fail' ? '<span class="badge-sm new">NEW</span>' : ''}
-                            ${r.oldStatus ? `<br><small style="color:var(--text-muted)">Was: ${r.oldStatus}</small>` : ''}
+                            ${r.oldStatus ? `<br><small style="color:var(--text-muted)">Was: ${esc(r.oldStatus)}</small>` : ''}
                         </p>
                     </div>
                     <div class="detail-block">
@@ -1826,14 +1837,14 @@
                     <div class="detail-block">
                         <h4>Account & Region</h4>
                         <p>
-                            <span class="account-tag ${getAcctClass(r.acctId)}">${DATA.accounts[r.acctId]?.short || r.acctId}</span>
+                            <span class="account-tag ${getAcctClass(r.acctId)}">${esc(DATA.accounts[r.acctId]?.short || r.acctId)}</span>
                             <span style="margin:0 6px;color:var(--text-muted)">|</span>
-                            <span class="region-text">${r.region}</span>
+                            <span class="region-text">${esc(r.region)}</span>
                         </p>
                     </div>
                     <div class="detail-block">
                         <h4>Service</h4>
-                        <p><span class="service-tag">${r.service || 'N/A'}</span></p>
+                        <p><span class="service-tag">${esc(r.service || 'N/A')}</span></p>
                     </div>
                     <div class="detail-block full">
                         <h4>Resource</h4>
@@ -1875,7 +1886,10 @@
 
         init();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"
+            integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+            crossorigin="anonymous"
+            defer></script>
 
 </body>
 

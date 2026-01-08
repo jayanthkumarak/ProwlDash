@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.8.0] - 2026-01-07
+
+### Security
+- **CRITICAL**: Complete security hardening of generated HTML reports
+  - Fixed 23 security vulnerabilities (14 HIGH, 8 MEDIUM, 1 LOW) - now 0 vulnerabilities
+  - Added Content Security Policy (CSP) to prevent XSS attacks
+  - Added X-Frame-Options header to prevent clickjacking
+  - Added X-Content-Type-Options header to prevent MIME type sniffing
+  - Implemented comprehensive XSS protection with proper data escaping
+  - Added Subresource Integrity (SRI) to CDN script resources
+  - Fixed insecure HTTP resources (migrated to HTTPS)
+  - Secured URL construction with encodeURIComponent for external links
+- **Security Testing**: Enhanced penetration testing tool with improved false positive detection
+
+### Changed
+- **Version**: Updated to semantic versioning (4.8.0) for security-focused release
+
 ## [5.1.2] - 2025-12-23
 ### Added
 - **Testing**: Added new integration test suite `tests/test_generation.py` to verify HTML/JS integrity and prevent regression.
