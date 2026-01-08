@@ -23,7 +23,7 @@ The tool runs entirely offline, requires no infrastructure, and is designed to s
 ### Reporting
 *   **Customization**: Supports Dark Mode and custom corporate branding via CSS.
 
-![Light Theme Dashboard](docs/images/dashboard-light.png)
+![Light Theme Dashboard](ProwlDash/docs/images/dashboard-light.png)
 
 ### Performance & Security
 *   **Hybrid Parsing**: Automatically switches between standard library and Pandas parsing based on dataset size (>10MB) for optimal performance.
@@ -33,13 +33,13 @@ The tool runs entirely offline, requires no infrastructure, and is designed to s
 ## Visual Gallery
 
 <div align="center">
-  <img src="docs/images/dashboard-dark.png" alt="Executive Summary" width="800">
+  <img src="ProwlDash/docs/images/dashboard-dark.png" alt="Executive Summary" width="800">
   <p><em>Executive Summary with clear pass/fail indicators</em></p>
   
-  <img src="docs/images/dashboard-charts.png" alt="Analysis Charts" width="800">
+  <img src="ProwlDash/docs/images/dashboard-charts.png" alt="Analysis Charts" width="800">
   <p><em>Interactive charts for severity and service distribution</em></p>
 
-  <img src="docs/images/dashboard-table.png" alt="Findings Table" width="800">
+  <img src="ProwlDash/docs/images/dashboard-table.png" alt="Findings Table" width="800">
   <p><em>Searchable and sortable findings table</em></p>
 </div>
 
